@@ -1,0 +1,182 @@
+1)
+Github, make a new repo
+
+.gitignore: Node
+License: GNU General Public License v3.0
+
+
+2) SSH
+
+On the github page, get the SSH code
+
+Open a terminal in the parent directory. run
+git clone [SSH CODE]
+
+This will CREATE A NEW FOLDER where you currently are, to mirror what's in github.
+
+
+
+3) INITIATE NPM
+
+Run the following in the right directory:
+
+npm init -y
+npm install --save-dev webpack webpack-cli
+
+
+This will generate a bunch of node_modules, package-lock.json and a package.json file.
+
+Create a "src" folder to put all your work into, and a index.js file:
+mkdir src && touch src/index.js
+
+
+4) INSTALL EVERYTHING YOU NEED
+
+HTML:
+npm install --save-dev html-webpack-plugin
+touch src/template.html
+
+CSS:
+npm install --save-dev style-loader css-loader
+
+img:
+npm install --save-dev html-loader
+
+dev server:
+npm install --save-dev webpack-dev-server
+
+
+5) create config file
+
+Create a webpack.config.js file in the root folder
+
+touch webpack.config.js
+
+Configure this based on past projects. Sample is below.
+
+If you haven't already, make sure there's a .gitignore file with "node_modules" and "dist" inside.
+
+
+
+6) initial git push
+
+>git add .
+>git status
+>git commit -m "initial webpack setup"
+>git push
+
+
+7) Setup NPM commands
+
+In Visual Studio, use the open folder command to open the project.
+
+Edit your package.json file to add stuff you want.
+
+Examples include:
+
+"scripts": {
+    "build": "webpack",
+    "dev": "webpack serve",
+    "deploy": "git checkout gh-pages && git merge main --no-edit && npx webpack && git add dist -f && git commit -m 'Deployment commit' && git subtree push --prefix dist origin gh-pages && git checkout main"
+  },
+
+Once you've created these, you can run these in the terminal. For example:
+>npm run build
+>npm run dev
+>npm run deploy
+
+===
+npx webpack
+===
+Builds everything from "src" into a new "dist" folder, ready for distribution.
+
+
+
+
+8) initial github pages setup
+
+---
+Make a new branch to deploy from by running
+git branch gh-pages
+
+You only need to do this the first time you deploy. The rest of the steps should be done every time you deploy or redeploy your project.
+
+Use the long command we created in the previous step, by running "npm run deploy" in the terminal. This will switch over to the gh-pages branch, compile the website from the src folder, and then push it to github, before switching back to the main branch.
+
+On github, go to the settings -> Pages 
+
+Your page should now be live, using the gh-pages branch.
+
+Whenever you need to push changes, first do it normally on the main branch, then run the deploy command to update the compiled website.
+
+
+9) EDITING THE WEBSITE
+
+You'll want to use the following command:
+
+===
+npx webpack serve
+npm run dev
+===
+Keeps automatically running the webpack command whenever you save any new changes to the source code. Access here:
+
+http://localhost:8080/
+
+The terminal window will be possessed with this command until you escape. On MacOS, do this with "ctrl+c".
+
+
+---
+
+
+
+
+
+
+
+
+
+
+
+SAMPLE CONFIG FILE:
+
+------------------
+// webpack.config.js
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+
+module.exports = {
+  mode: "development",
+  entry: "./src/index.js",
+  output: {
+    filename: "main.js",
+    path: path.resolve(__dirname, "dist"),
+    clean: true,
+  },
+  devtool: "eval-source-map",
+  devServer: {
+    watchFiles: ["./src/template.html"],
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: "./src/template.html",
+    }),
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader"],
+      },
+      {
+        test: /\.html$/i,
+        loader: "html-loader",
+      },
+      {
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: "asset/resource",
+      },
+    ],
+  },
+};
+--------------------
+
