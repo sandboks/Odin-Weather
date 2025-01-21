@@ -1,12 +1,12 @@
 {
-  "name": "dynamic-ui-experiments",
+  "name": "odin-weather",
   "version": "1.0.0",
-  "description": "https://www.theodinproject.com/lessons/node-path-javascript-dynamic-user-interface-interactions",
+  "description": "",
   "main": "index.js",
   "scripts": {
-      "build": "webpack",
-      "dev": "webpack serve",
-      "deploy": "git checkout gh-pages && git merge main --no-edit && npx webpack && git add dist -f && git commit -m 'Deployment commit' && git subtree push --prefix dist origin gh-pages && git checkout main"
+    "build": "webpack",
+    "dev": "webpack serve",
+    "deploy": "git checkout gh-pages && git merge main --no-edit && npx webpack && git add dist -f && git commit -m 'Deployment commit' && git subtree push --prefix dist origin gh-pages && git checkout main"
   },
   "keywords": [],
   "author": "",
