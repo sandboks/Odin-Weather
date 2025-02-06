@@ -1,0 +1,45 @@
+/*
+VARIABLES
+*/
+
+:root {
+    --color-main: #F28E1C;
+    --color-backing: #bfcddd;
+}
+
+/*
+MAIN CONTENT
+*/
+
+.MainWrapper {
+    display: grid;
+    align-items: center;
+    justify-content: center;
+}
+
+/*
+MAIN WEATHER PANEL
+*/
+
+.WeatherPanel {
+    background-color: var(--color-backing);
+    padding: 1em;
+    border-radius: 1em;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.WeatherPanelMainTemperature {
+    margin: 0 1em;
+}
+
+.WeatherPanelMainTemperature span {
+    font-size: xxx-large;
+    font-weight: bold;
+}
+
+.degreesFloating {
+    position: absolute;
+}

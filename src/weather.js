@@ -4,10 +4,9 @@ Class to handle weather API data, reading and interpreting it
 
 export const WeatherData = (function () {
 
-    function TestFunction() {
-        console.log("HELLO");
+    function PerformWeatherSearch(location) {
 
-        GetWeatherDataFromLocation("tokyo");
+        GetWeatherDataFromLocation(location);
     }
 
     async function GetWeatherDataFromLocation(location) {
@@ -17,6 +16,8 @@ export const WeatherData = (function () {
         const data = await response.json();
 
         GetCurrentTimeInTimezone(data.tzoffset);
+
+        let resolvedAddress = data.resolvedAddress;
 
 
 
@@ -38,7 +39,7 @@ export const WeatherData = (function () {
     }
 
     return {
-        TestFunction,
+        PerformWeatherSearch,
     };
 
 })();
