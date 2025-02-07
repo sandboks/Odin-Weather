@@ -4,12 +4,33 @@ VARIABLES
 
 :root {
     --color-main: #F28E1C;
-    --color-backing: #bfcddd;
+    --color-backing: #edf2f8;
+
+    --borderRadius: 1em;
+}
+
+/*
+FONT
+*/
+
+@font-face {
+    font-family:'ZenMaruRegular';
+    src: url('font/Zen_Maru_Gothic/ZenMaruGothic-Regular.ttf');
+}
+
+@font-face {
+    font-family:'ZenMaruLight';
+    src: url('font/Zen_Maru_Gothic/ZenMaruGothic-Light.ttf');
 }
 
 /*
 MAIN CONTENT
 */
+
+body {
+    font-family: 'ZenMaruLight';
+    margin: 1em;
+}
 
 .MainWrapper {
     display: grid;
@@ -17,14 +38,95 @@ MAIN CONTENT
     justify-content: center;
 }
 
+.PanelGrid {
+    display: grid;
+    gap: 1em;
+}
+
+/*
+TOP HEADER
+*/
+
+.HeaderParent {
+    display: flex;
+    display: grid;
+    gap: 0.5em;
+    /*
+    grid-template-columns: 1fr auto;
+    */
+    margin-bottom: 1em;
+}
+
+.TitleBanner {
+    display: grid;
+    grid-template-columns: 1fr auto;
+}
+
+.TitleBanner h2 {
+    margin: 0;
+}
+
+.perfectSquare {
+    aspect-ratio: 1 / 1;
+}
+
+/*
+SEARCH BAR
+*/
+
+input[type=text] {
+    width: 100%;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: var(--borderRadius);
+    font-size: 16px;
+    background-color: white;
+    background-image: url('./img/search.png');
+    background-position: 10px 10px; 
+    background-repeat: no-repeat;
+    padding: 12px 20px 12px 40px;
+}
+
+/*
+GEAR ICON
+*/
+
+.CircleButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--color-main);
+    padding: 0.25em;
+    cursor: pointer;
+}
+
+.CircleButton img {
+    /* this line forces the icon to be solid white */
+    filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(195deg) brightness(108%) contrast(104%);
+}
+
 /*
 MAIN WEATHER PANEL
 */
 
+.SideGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1em;
+}
+
+.CenteredImage {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .WeatherPanel {
     background-color: var(--color-backing);
     padding: 1em;
-    border-radius: 1em;
+    border-radius: var(--borderRadius);
 
     display: flex;
     flex-direction: column;
@@ -38,6 +140,7 @@ MAIN WEATHER PANEL
 .WeatherPanelMainTemperature span {
     font-size: xxx-large;
     font-weight: bold;
+    font-family: 'ZenMaruRegular';
 }
 
 .degreesFloating {
