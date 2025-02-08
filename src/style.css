@@ -114,6 +114,7 @@ MAIN WEATHER PANEL
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1em;
+    width: 100%;
 }
 
 .CenteredImage {
@@ -123,7 +124,7 @@ MAIN WEATHER PANEL
     align-items: center;
 }
 
-.WeatherPanel {
+.WeatherPanel, .WeatherOverviewPanel {
     background-color: var(--color-backing);
     padding: 1em;
     border-radius: var(--borderRadius);
@@ -131,6 +132,10 @@ MAIN WEATHER PANEL
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.WeatherOverviewPanel {
+    cursor: pointer;
 }
 
 .WeatherPanelMainTemperature {

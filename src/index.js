@@ -4,3 +4,4 @@ import { DOM_Controller } from "./dom.js";
 
 //WeatherData.PerformWeatherSearch("tokyo");
 DOM_Controller.TestFunction();
+DOM_Controller.CreateOverviewPanels(["tokyo", "sydney", "auckland"]);
