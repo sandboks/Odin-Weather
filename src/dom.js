@@ -8,47 +8,73 @@ import { DOM_Helper } from "./domHelper.js";
 
 //import imgSnow from "./img/weather/wi_snowman.svg";
 import imgUnknown from "./img/weather/cloud-question-outline.svg";
-import imgSnow from "./img/weather/wi_mostly-clear-snow.svg";
-import imgCloud from "./img/weather/wi_cloudy.svg";
-import imgRain from "./img/weather/wi_extreme-rain.svg";
+import imgSunny from "./img/weather/clearDay.png";
+import imgSnow from "./img/weather/snow.png";
+import imgCloud from "./img/weather/cloud.png";
+import imgRain from "./img/weather/rain.png";
 
 export const DOM_Controller = (function () {
     const OverviewPanelsRoot = document.querySelector(".PanelGrid");
+    const OverviewRoot = document.querySelector("#overviewSection");
+    const DetailsRoot = document.querySelector("#detailsSection");
     
     async function TestFunction() {
         console.log("Hello, world");
-        let data = await WeatherData.GetWeatherDataFromLocation("tokyo");
-        InsertDataIntoPage(data);
+        SwitchToOverview();
     }
 
-    function InsertDataIntoPage(data) {
+    async function SwitchToDetails(location) {
+        OverviewRoot.style.display = "none";
+        DetailsRoot.style.display = "grid";
+
+        let data = await WeatherData.GetWeatherDataFromLocation(location);
+        InsertDataIntoDetailsPage(data);
+
+    }
+
+    function SwitchToOverview() {
+        OverviewRoot.style.display = "grid";
+        DetailsRoot.style.display = "none";
+    }
+
+    function InsertDataIntoDetailsPage(data) {
         console.log(data);
 
         let today = data.days[0];
 
-        const locationSpan = document.getElementById("locationSpan");
-        const dateSpan = document.getElementById("dateSpan");
-        const timeSpan = document.getElementById("timeSpan");
+        const locationSpan = document.querySelector("#detailsSection #locationSpan");
+        const dateSpan = document.querySelector("#detailsSection #dateSpan");
+        const timeSpan = document.querySelector("#detailsSection #timeSpan");
         locationSpan.textContent = data.resolvedAddress;
         dateSpan.textContent = new Date(today.datetime).toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', });
         timeSpan.textContent = WeatherData.GetCurrentTimeInTimezone(data.tzoffset).substring(0,5);
 
-        const temperatureReading = document.querySelector(".temperatureReading");
+        const temperatureReading = document.querySelector("#detailsSection .temperatureReading");
         temperatureReading.textContent = today.temp;
 
-        const feelsLikeSpan = document.getElementById("feelsLikeSpan");
+        const feelsLikeSpan = document.querySelector("#detailsSection #feelsLikeSpan");
         feelsLikeSpan.textContent = `feels like ${today.feelslike}°`;
 
-        const conditionImg = document.getElementById("conditionImg");
+        const conditionImg = document.querySelector("#detailsSection #conditionImg");
+        ApplyConditionsImage(conditionImg, today.conditions);
+        
+    }
+
+    function ApplyConditionsImage(conditionImg, todaysConditions) {
         const conditions = [
+            ["CLEAR", imgSunny],
             ["CLOUDY", imgCloud],
             ["RAIN", imgRain],
             ["SNOW", imgSnow],
         ];
+
+        console.log(todaysConditions.toUpperCase());
+
         for (let i = 0; i < conditions.length; i++) {
             let condition = conditions[i];
-            if (today.conditions.toUpperCase().includes(condition[0]))
+            if (todaysConditions.toUpperCase().includes(condition[0])) {
                 conditionImg.src = condition[1];
+            }   
         }
     }
 
@@ -92,6 +118,14 @@ export const DOM_Controller = (function () {
 
         panel.querySelector(".temperatureReading").textContent = today.temp;
         panel.querySelector("#feelsLikeSpan").textContent = `feels like ${today.feelslike}°`;
+
+
+        console.log(data.resolvedAddress);
+        ApplyConditionsImage(panel.querySelector("#conditionImg"), today.conditions);
+
+        panel.addEventListener('click', () => {
+            SwitchToDetails(location);
+        });
 
         /*
         let panel = DOM_Helper.AppendDivWithClasses(OverviewPanelsRoot, ["WeatherPanel"]);

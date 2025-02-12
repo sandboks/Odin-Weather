@@ -2,6 +2,9 @@
 Class to handle weather API data, reading and interpreting it
 */
 
+const apiKey = "VLJ2ZNYEW4LQATMDBET324BMR"; // I am well aware that including the key in the source code is bad practice - I haven't studied backend development yet, so for this project the key is exposed
+let units = "metric"; // "us" for Fahrenheit
+
 export const WeatherData = (function () {
 
     async function PerformWeatherSearch(location) {
@@ -14,7 +17,7 @@ export const WeatherData = (function () {
     }
 
     async function GetWeatherDataFromLocation(location) {
-        let request = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?unitGroup=metric&include=days&key=VLJ2ZNYEW4LQATMDBET324BMR&contentType=json`;
+        let request = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?unitGroup=${units}&include=days&key=${apiKey}&contentType=json`;
 
         //const response = await fetch(request, {mode: 'cors'});
         //const data = await response.json();
