@@ -7,12 +7,10 @@
 <script defer src="main.js"></script></head>
 <body>
     <div class="HeaderParent">
-        
         <div class="TitleBanner">        
             <h2>Weather</h2>
             <div class="perfectSquare">
                 <div class="CircleButton">
-
                     <img src="21a2bc942cb9bc7cfffa.svg" draggable="false">
                 </div>
             </div>
@@ -20,9 +18,13 @@
         <div class="SearchParent">
             <input type="text" name="search" placeholder="new search">
         </div>
-        
     </div>
-    <div class="MainWrapper">
+    <div class="MainWrapper" id="overviewSection">
+        <div class="PanelGrid">
+            
+        </div>
+    </div>
+    <div class="MainWrapper" id="detailsSection">
         <div class="PanelGrid">
             <div class="WeatherPanel">
                 <span id="locationSpan">Tokyo, Japan</span>
@@ -32,23 +34,7 @@
             <div class="WeatherPanel">
                 <div class="SideGrid">
                     <div class="CenteredImage">
-                        <img src="791772be1658e9e2ea83.svg" id="conditionImg">
-                    </div>
-                    <div class="CenteredImage">
-                        <div class="WeatherPanelMainTemperature">
-                            <span class="temperatureReading">5.1</span>
-                            <span class="degreesFloating">°</span>
-                        </div>
-                        <span id="feelsLikeSpan">feels like 2.1°</span>
-                    </div>
-                </div>
-            </div>
-            <div class="WeatherPanel">
-                <span id="locationSpan">Sydney, Australia</span>
-                <span id="timeSpan">10:40</span>
-                <div class="SideGrid">
-                    <div class="CenteredImage">
-                        <img src="791772be1658e9e2ea83.svg" id="conditionImg">
+                        <img src="0645932cbf8357485a75.svg" id="conditionImg">
                     </div>
                     <div class="CenteredImage">
                         <div class="WeatherPanelMainTemperature">
