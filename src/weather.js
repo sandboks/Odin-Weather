@@ -3,7 +3,9 @@ Class to handle weather API data, reading and interpreting it
 */
 
 const apiKey = "VLJ2ZNYEW4LQATMDBET324BMR"; // I am well aware that including the key in the source code is bad practice - I haven't studied backend development yet, so for this project the key is exposed
-let units = "metric"; // "us" for Fahrenheit
+//let units = "metric"; // "us" for Fahrenheit
+
+import { UserData } from "./userData.js";
 
 export const WeatherData = (function () {
 
@@ -17,7 +19,7 @@ export const WeatherData = (function () {
     }
 
     async function GetWeatherDataFromLocation(location) {
-        let request = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?unitGroup=${units}&include=days&key=${apiKey}&contentType=json`;
+        let request = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?unitGroup=${UserData.GetTemperatureString()}&include=days&key=${apiKey}&contentType=json`;
 
         //const response = await fetch(request, {mode: 'cors'});
         //const data = await response.json();
@@ -40,7 +42,7 @@ export const WeatherData = (function () {
         return data;
     }
 
-    function GetCurrentTimeInTimezone(timezone) {
+    function GetCurrentTimeInTimezone(timezone, use12hour = false) {
         // create Date object for current location
         var date = new Date();
 
@@ -51,9 +53,12 @@ export const WeatherData = (function () {
         var currentTime = new Date(utcTime + (3600000 * timezone));
 
         currentTime.getTimezoneOffset();
+        let options = { timeStyle: 'short', hour12: use12hour };
+        //let returnString = (use12hour ? currentTime.toLocaleTimeString('en-US', options) : "");
+
         console.log(`The time in this place is: ${currentTime.toLocaleTimeString()}`);
 
-        return currentTime.toLocaleTimeString();
+        return currentTime.toLocaleTimeString('en-US', options);
     }
 
     return {

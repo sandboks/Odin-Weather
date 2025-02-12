@@ -5,6 +5,7 @@ Class to handle HTML manipulation, reading and interpreting it
 /* import the WeatherData class for data collection when triggered by the user */
 import { WeatherData } from "./weather.js";
 import { DOM_Helper } from "./domHelper.js";
+import { UserData } from "./userData.js";
 
 //import imgSnow from "./img/weather/wi_snowman.svg";
 import imgUnknown from "./img/weather/cloud-question-outline.svg";
@@ -17,9 +18,12 @@ export const DOM_Controller = (function () {
     const OverviewPanelsRoot = document.querySelector(".PanelGrid");
     const OverviewRoot = document.querySelector("#overviewSection");
     const DetailsRoot = document.querySelector("#detailsSection");
+
+    //let userData = new UserDataClass();
     
     async function TestFunction() {
         console.log("Hello, world");
+        //console.log(userData.Get12hour());
         SwitchToOverview();
     }
 
@@ -47,13 +51,16 @@ export const DOM_Controller = (function () {
         const timeSpan = document.querySelector("#detailsSection #timeSpan");
         locationSpan.textContent = data.resolvedAddress;
         dateSpan.textContent = new Date(today.datetime).toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', });
-        timeSpan.textContent = WeatherData.GetCurrentTimeInTimezone(data.tzoffset).substring(0,5);
+        timeSpan.textContent = WeatherData.GetCurrentTimeInTimezone(data.tzoffset);
 
         const temperatureReading = document.querySelector("#detailsSection .temperatureReading");
         temperatureReading.textContent = today.temp;
 
         const feelsLikeSpan = document.querySelector("#detailsSection #feelsLikeSpan");
         feelsLikeSpan.textContent = `feels like ${today.feelslike}°`;
+
+        const TemperatureUnitsSymbol = document.querySelector("#detailsSection .TemperatureUnitsSymbol");
+        TemperatureUnitsSymbol.textContent = "c";
 
         const conditionImg = document.querySelector("#detailsSection #conditionImg");
         ApplyConditionsImage(conditionImg, today.conditions);
@@ -114,10 +121,11 @@ export const DOM_Controller = (function () {
         let today = data.days[0];
 
         panel.querySelector("#locationSpan").textContent = data.resolvedAddress;
-        panel.querySelector("#timeSpan").textContent = WeatherData.GetCurrentTimeInTimezone(data.tzoffset).substring(0,5);
+        panel.querySelector("#timeSpan").textContent = WeatherData.GetCurrentTimeInTimezone(data.tzoffset, UserData.GetUse12Hour());
 
         panel.querySelector(".temperatureReading").textContent = today.temp;
         panel.querySelector("#feelsLikeSpan").textContent = `feels like ${today.feelslike}°`;
+        panel.querySelector(".TemperatureUnitsSymbol").textContent = UserData.GetTemperatureSymbol();
 
 
         console.log(data.resolvedAddress);
@@ -174,6 +182,7 @@ export const DOM_Controller = (function () {
                     let WeatherPanelMainTemperature = DOM_Helper.AppendDivWithClasses(rightDiv, ["WeatherPanelMainTemperature"]);
                         DOM_Helper.AppendSpan(WeatherPanelMainTemperature, "-", ["temperatureReading"]);
                         DOM_Helper.AppendSpan(WeatherPanelMainTemperature, "°", ["degreesFloating"]);
+                        DOM_Helper.AppendSpan(WeatherPanelMainTemperature, "c", ["TemperatureUnitsSymbol"]);
 
                     let feelsLike = DOM_Helper.AppendSpan(rightDiv, "-");
                     feelsLike.id = "feelsLikeSpan";
