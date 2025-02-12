@@ -1,0 +1,68 @@
+.dialogParentDiv {
+    width: 100%;
+    height: 100%;
+    /* height: 500px; */
+    display: absolute;
+    position: absolute;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+.dialogBackdrop {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 1;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    pointer-events: auto;
+}
+
+dialog {
+    border: none !important;
+    border-radius: 1em;
+    padding: 1.5em;
+    overflow: visible;
+    z-index: 2;
+}
+
+dialog:-internal-dialog-in-top-layer::backdrop {
+    position: fixed;
+    inset: 0px;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+dialog .closeButtonDiv {
+    /* position: inherit; */
+    top: -1.5em;
+    right: -1.5em;
+}
+
+.closeButtonDiv img {
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+}
+
+.buttonImage {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.addNewBookDialogDiv {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2em;
+}
+
+#dialogHeaderText {
+    text-align: center;
+    margin: 0;
+}
+
+h1 {
+    font-weight: 500;
+}

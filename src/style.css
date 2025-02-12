@@ -5,8 +5,10 @@ VARIABLES
 :root {
     --color-main: #F28E1C;
     --color-backing: #edf2f8;
+    --color-grey: #ccc;
 
     --borderRadius: 1em;
+    --margin-default: 1em;
 }
 
 /*
@@ -29,13 +31,14 @@ MAIN CONTENT
 
 body {
     font-family: 'ZenMaruLight';
-    margin: 1em;
+    margin: 0;
 }
 
 .MainWrapper {
     display: grid;
     align-items: center;
     justify-content: center;
+    margin: var(--margin-default);
 }
 
 .PanelGrid {
@@ -54,6 +57,7 @@ TOP HEADER
     /*
     grid-template-columns: 1fr auto;
     */
+    margin: var(--margin-default);
     margin-bottom: 1em;
 }
 
@@ -122,6 +126,16 @@ MAIN WEATHER PANEL
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.AddNewPanelButton {
+    border: solid 0.25em var(--color-grey);
+    border-radius: 1em;
+    padding: 0.5em;
+    font-weight: bolder;
+    font-size: x-large;
+
+    cursor: pointer;
 }
 
 .WeatherPanel, .WeatherOverviewPanel {

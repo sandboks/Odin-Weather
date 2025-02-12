@@ -1,4 +1,5 @@
 import "./style.css";
+import "./dialog.css";
 // import { WeatherData } from "./weather.js";
 import { DOM_Controller } from "./dom.js";
 

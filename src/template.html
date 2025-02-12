@@ -6,6 +6,28 @@
     <title>Odin Weather</title>
 </head>
 <body>
+    <!--DIALOG-->
+    <div class="dialogParentDiv" style="display: none">
+        <dialog id="addNewBookDialog" open=""> <!-- open=""-->
+            <div class="closeButtonDiv">
+                <img src="img/close-circle-outline.svg" id="panelCloseButton" class="buttonImage">
+            </div>
+            <div class="addNewBookDialogDiv">
+                <h1 id="dialogHeaderText">New</h1>
+                <form method="dialog" id="addNewBookForm">
+                    <div class="formInputSection">
+                        <div>
+                            <input type="text" name="title" placeholder="Title">
+                        </div>
+                    </div>
+                </form>
+                <button id="createNewBookButton">Create</button>
+            </div>
+        </dialog>
+        <div class="dialogBackdrop" style="display: block;"></div>
+    </div>
+
+    <!--MAIN CONTENT-->
     <div class="HeaderParent">
         <div class="TitleBanner">        
             <h2>Weather</h2>
@@ -21,7 +43,9 @@
     </div>
     <div class="MainWrapper" id="overviewSection">
         <div class="PanelGrid">
-            
+            <div class="CenteredImage AddNewPanelButton">
+                <span>add new</span>
+            </div>
         </div>
     </div>
     <div class="MainWrapper" id="detailsSection">

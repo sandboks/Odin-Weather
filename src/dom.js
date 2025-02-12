@@ -19,12 +19,27 @@ export const DOM_Controller = (function () {
     const OverviewRoot = document.querySelector("#overviewSection");
     const DetailsRoot = document.querySelector("#detailsSection");
 
+    const AddNewPanelButton = document.querySelector(".AddNewPanelButton");
+    const dialogParentDiv = document.querySelector(".dialogParentDiv");
+
     //let userData = new UserDataClass();
     
     async function TestFunction() {
         console.log("Hello, world");
         //console.log(userData.Get12hour());
         SwitchToOverview();
+        AddEventListeners();
+    }
+
+    function AddEventListeners() {
+
+        AddNewPanelButton.addEventListener('click', () => {
+            OpenNewPanelDialog();
+        });
+    }
+
+    function OpenNewPanelDialog() {
+        dialogParentDiv.style.display = "flex";
     }
 
     async function SwitchToDetails(location) {
