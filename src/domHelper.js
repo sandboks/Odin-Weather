@@ -15,6 +15,16 @@ export const DOM_Helper = (function () {
         return div;
     }
 
+    function InsertDivAtTop(parentNode, classes) {
+        const div = document.createElement('div');
+        for (let i = 0; i < classes.length; i++) {
+            div.classList.add(classes[i]);
+        }
+        parentNode.insertBefore(div, parentNode.children[1]);
+
+        return div;
+    }
+
     function AppendTag(parentNode, tag, contents, classList = []) {
         const tagHTML = document.createElement(tag);
         tagHTML.textContent = contents;
@@ -33,6 +43,7 @@ export const DOM_Helper = (function () {
 
     return {
         AppendDivWithClasses,
+        InsertDivAtTop,
         AppendTag,
         AppendSpan,
     };

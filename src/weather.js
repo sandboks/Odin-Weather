@@ -56,7 +56,8 @@ export const WeatherData = (function () {
         let options = { timeStyle: 'short', hour12: use12hour };
         //let returnString = (use12hour ? currentTime.toLocaleTimeString('en-US', options) : "");
 
-        console.log(`The time in this place is: ${currentTime.toLocaleTimeString()}`);
+        //console.log(`The time in this place is: ${currentTime.toLocaleTimeString()}`);
+
 
         return currentTime.toLocaleTimeString('en-US', options);
     }

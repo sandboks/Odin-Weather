@@ -23,8 +23,14 @@ export const DOM_Controller = (function () {
     const dialogParentDiv = document.querySelector(".dialogParentDiv");
     const panelCloseButton = document.querySelector("#panelCloseButton");
     const dialogBackdrop = document.querySelector(".dialogBackdrop");
+    const AddNewLocationButton = document.querySelector("#AddNewLocationButton");
+    const userSearchInput = document.querySelector("#userSearchInput");
+    const searchErrorText = document.querySelector("#searchErrorText");
+    const ReturnToOverviewButton = document.querySelector("#ReturnToOverviewButton");
 
     //let userData = new UserDataClass();
+
+    let _searchInProgress = false;
     
     async function TestFunction() {
         console.log("Hello, world");
@@ -39,7 +45,6 @@ export const DOM_Controller = (function () {
             OpenNewPanelDialog();
         });
 
-
         panelCloseButton.addEventListener('click', () => {
             CloseNewPanelDialog();
         });
@@ -47,21 +52,59 @@ export const DOM_Controller = (function () {
         dialogBackdrop.addEventListener('click', () => {
             CloseNewPanelDialog();
         });
+
+        AddNewLocationButton.addEventListener('click', () => {
+            PerformLocationSearch();
+        });
+
+        ReturnToOverviewButton.addEventListener('click', () => {
+            SwitchToOverview();
+        })
     }
 
     function OpenNewPanelDialog() {
+        userSearchInput.value = "";
         dialogParentDiv.style.display = "flex";
     }
 
     function CloseNewPanelDialog() {
+        if (_searchInProgress)
+            return;
         dialogParentDiv.style.display = "none";
     }
 
-    async function SwitchToDetails(location) {
+    async function PerformLocationSearch() {
+        _searchInProgress = true;
+
+        AddNewLocationButton.textContent = "Searching...";
+        searchErrorText.textContent = "";
+
+        console.log(userSearchInput.textContent);
+        let data = await WeatherData.GetWeatherDataFromLocation(userSearchInput.value);
+
+        if (data == null) {
+            searchErrorText.textContent = "Location could not be found."
+            console.log(userSearchInput.value);
+            _searchInProgress = false;
+        }
+        else {
+            let panel = CreateBlankWeatherOverviewPanel();
+            InsertDataIntoOverviewPanel(panel, data);
+            _searchInProgress = false;
+            userSearchInput.value = "";
+            CloseNewPanelDialog();
+        }
+
+        AddNewLocationButton.textContent = "Add";
+        
+
+    }
+
+    async function SwitchToDetails(data) {
         OverviewRoot.style.display = "none";
         DetailsRoot.style.display = "grid";
 
-        let data = await WeatherData.GetWeatherDataFromLocation(location);
+        //let data = await WeatherData.GetWeatherDataFromLocation(location);
         InsertDataIntoDetailsPage(data);
 
     }
@@ -105,7 +148,7 @@ export const DOM_Controller = (function () {
             ["SNOW", imgSnow],
         ];
 
-        console.log(todaysConditions.toUpperCase());
+        //console.log(todaysConditions.toUpperCase());
 
         for (let i = 0; i < conditions.length; i++) {
             let condition = conditions[i];
@@ -119,35 +162,24 @@ export const DOM_Controller = (function () {
     create one of several panels in the "overview" page, which shows a summary of multiple locations at once
     */
 
-/*
-<div class="WeatherPanel">
-    <span id="locationSpan">Sydney, Australia</span>
-    <span id="timeSpan">10:40</span>
-    <div class="SideGrid">
-        <div class="CenteredImage">
-            <img src="./img/weather/wi_clear-day.svg" id="conditionImg">
-        </div>
-        <div class="CenteredImage">
-            <div class="WeatherPanelMainTemperature">
-                <span class="temperatureReading">5.1</span>
-                <span class="degreesFloating">°</span>
-            </div>
-            <span id="feelsLikeSpan">feels like 2.1°</span>
-        </div>
-    </div>
-</div>
-*/
-
     async function CreateOverviewPanels(list) {
-        await list.forEach((locationString) => CreateWeatherOverviewPanelAndFetchData(locationString));
-
-
+        await list.forEach(locationString => { 
+            UserData.InsertNewPlace(locationString);
+            CreateWeatherOverviewPanelAndFetchData(locationString, UserData.GenerateNewIndex());
+        });
     }
 
     async function CreateWeatherOverviewPanelAndFetchData(location, index = -1) {
+        //UserData.InsertNewPlace(location);
+        
         let panel = CreateBlankWeatherOverviewPanel(index);
 
         let data = await WeatherData.GetWeatherDataFromLocation(location);
+        InsertDataIntoOverviewPanel(panel, data);
+    }
+
+    function InsertDataIntoOverviewPanel(panel, data) {
+
         let today = data.days[0];
 
         panel.querySelector("#locationSpan").textContent = data.resolvedAddress;
@@ -158,42 +190,17 @@ export const DOM_Controller = (function () {
         panel.querySelector(".TemperatureUnitsSymbol").textContent = UserData.GetTemperatureSymbol();
 
 
-        console.log(data.resolvedAddress);
+        //console.log(data.resolvedAddress);
         ApplyConditionsImage(panel.querySelector("#conditionImg"), today.conditions);
 
         panel.addEventListener('click', () => {
-            SwitchToDetails(location);
+            SwitchToDetails(data);
         });
-
-        /*
-        let panel = DOM_Helper.AppendDivWithClasses(OverviewPanelsRoot, ["WeatherPanel"]);
-        panel.id = index; // this needs to come from the backend, but
-
-            let locationSpan = DOM_Helper.AppendSpan(panel, data.resolvedAddress);
-            locationSpan.id = "locationSpan";
-            let timeSpan = DOM_Helper.AppendSpan(panel, WeatherData.GetCurrentTimeInTimezone(data.tzoffset).substring(0,5));
-            timeSpan.id = "timeSpan";
-
-            let sideGrid = DOM_Helper.AppendDivWithClasses(panel, ["SideGrid"]);
-
-                let CenteredImage = DOM_Helper.AppendDivWithClasses(sideGrid, ["CenteredImage"]);
-                    let img = DOM_Helper.AppendTag(CenteredImage, "img");
-                    img.src = imgSnow;
-                    img.id = "conditionImg";
-
-                let rightDiv = DOM_Helper.AppendDivWithClasses(sideGrid, []);
-                    let WeatherPanelMainTemperature = DOM_Helper.AppendDivWithClasses(rightDiv, ["WeatherPanelMainTemperature"]);
-                        DOM_Helper.AppendSpan(WeatherPanelMainTemperature, "6.9", ["temperatureReading"]);
-                        DOM_Helper.AppendSpan(WeatherPanelMainTemperature, "°", ["degreesFloating"]);
-
-                    DOM_Helper.AppendSpan(rightDiv, "feels like --");
-        */
-
     }
 
     function CreateBlankWeatherOverviewPanel(index = -1) {
 
-        let panel = DOM_Helper.AppendDivWithClasses(OverviewPanelsRoot, ["WeatherOverviewPanel"]);
+        let panel = DOM_Helper.InsertDivAtTop(OverviewPanelsRoot, ["WeatherOverviewPanel"]);
         panel.id = index; // this needs to come from the backend, but
 
             let locationSpan = DOM_Helper.AppendSpan(panel, "-");
@@ -216,6 +223,7 @@ export const DOM_Controller = (function () {
 
                     let feelsLike = DOM_Helper.AppendSpan(rightDiv, "-");
                     feelsLike.id = "feelsLikeSpan";
+
 
         return panel;
 

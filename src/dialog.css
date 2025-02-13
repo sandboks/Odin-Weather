@@ -84,3 +84,10 @@ dialog button {
     */
     cursor: pointer;
 }
+
+#searchErrorText {
+    position: absolute;
+    text-align: center;
+    align-self: center;
+    color: red;
+}
