@@ -66,3 +66,21 @@ dialog .closeButtonDiv {
 h1 {
     font-weight: 500;
 }
+
+dialog button {
+    padding: 12px 24px;
+    border-radius: 1.5em;
+    border: 0px;
+    text-decoration: none;
+    color: white;
+    background-color: var(--color-main);
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    width: 8em;
+    height: 3em;
+    /*
+    transition: var(--transition-time);
+    */
+    cursor: pointer;
+}

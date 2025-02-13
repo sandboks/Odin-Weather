@@ -21,6 +21,8 @@ export const DOM_Controller = (function () {
 
     const AddNewPanelButton = document.querySelector(".AddNewPanelButton");
     const dialogParentDiv = document.querySelector(".dialogParentDiv");
+    const panelCloseButton = document.querySelector("#panelCloseButton");
+    const dialogBackdrop = document.querySelector(".dialogBackdrop");
 
     //let userData = new UserDataClass();
     
@@ -36,10 +38,23 @@ export const DOM_Controller = (function () {
         AddNewPanelButton.addEventListener('click', () => {
             OpenNewPanelDialog();
         });
+
+
+        panelCloseButton.addEventListener('click', () => {
+            CloseNewPanelDialog();
+        });
+
+        dialogBackdrop.addEventListener('click', () => {
+            CloseNewPanelDialog();
+        });
     }
 
     function OpenNewPanelDialog() {
         dialogParentDiv.style.display = "flex";
+    }
+
+    function CloseNewPanelDialog() {
+        dialogParentDiv.style.display = "none";
     }
 
     async function SwitchToDetails(location) {
