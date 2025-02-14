@@ -21,6 +21,7 @@ export const DOM_Controller = (function () {
 
     const AddNewPanelButton = document.querySelector(".AddNewPanelButton");
     const dialogParentDiv = document.querySelector(".dialogParentDiv");
+    const addNewLocationDialog = document.querySelector("#addNewLocationDialog");
     const panelCloseButton = document.querySelector("#panelCloseButton");
     const dialogBackdrop = document.querySelector(".dialogBackdrop");
     const AddNewLocationButton = document.querySelector("#AddNewLocationButton");
@@ -60,17 +61,28 @@ export const DOM_Controller = (function () {
         ReturnToOverviewButton.addEventListener('click', () => {
             SwitchToOverview();
         })
+
+        addNewLocationDialog.addEventListener('click', (event) => {
+            var rect = addNewLocationDialog.getBoundingClientRect();
+            var isInDialog = (rect.top <= event.clientY && event.clientY <= rect.top + rect.height &&
+                rect.left <= event.clientX && event.clientX <= rect.left + rect.width);
+            if (!isInDialog) {
+                addNewLocationDialog.close();
+  }
+        });
     }
 
     function OpenNewPanelDialog() {
         userSearchInput.value = "";
-        dialogParentDiv.style.display = "flex";
+        addNewLocationDialog.showModal();
+        //dialogParentDiv.style.display = "flex";
     }
 
     function CloseNewPanelDialog() {
         if (_searchInProgress)
             return;
-        dialogParentDiv.style.display = "none";
+        addNewLocationDialog.close();
+        //dialogParentDiv.style.display = "none";
     }
 
     async function PerformLocationSearch() {
