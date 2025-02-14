@@ -7,26 +7,22 @@
 <script defer src="main.js"></script></head>
 <body>
     <!--DIALOG-->
-    <div class="dialogParentDiv" style="display: none">
-        <dialog id="addNewBookDialog" open=""> <!-- open=""-->
+        <dialog id="addNewLocationDialog"> <!-- open=""-->
             <div class="closeButtonDiv">
                 <img src="7bbf47780fb42aed09bf.svg" id="panelCloseButton" class="buttonImage">
             </div>
             <div class="addNewBookDialogDiv">
                 <h1 id="dialogHeaderText">New</h1>
                 <form method="dialog" id="addNewBookForm">
-                    <div class="formInputSection">
                         <div>
                             <input type="text" name="title" placeholder="" id="userSearchInput">
                         </div>
                         <span id="searchErrorText"></span>
-                    </div>
                 </form>
                 <button id="AddNewLocationButton">Add</button>
             </div>
         </dialog>
-        <div class="dialogBackdrop" style="display: block;"></div>
-    </div>
+        <div class="dialogBackdrop" style="display: none;"></div>
 
     <!--MAIN CONTENT-->
     <div class="HeaderParent">
