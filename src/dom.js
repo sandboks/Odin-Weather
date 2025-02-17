@@ -37,6 +37,7 @@ export const DOM_Controller = (function () {
     //let userData = new UserDataClass();
 
     let _searchInProgress = false;
+    let _currentPanel = null;
     
     async function TestFunction() {
         console.log("Hello, world");
@@ -105,12 +106,19 @@ export const DOM_Controller = (function () {
 
         if (data == null) {
             searchErrorText.textContent = "Location could not be found."
-            console.log(userSearchInput.value);
+            //console.log(userSearchInput.value);
             _searchInProgress = false;
         }
         else {
-            let panel = CreateBlankWeatherOverviewPanel();
-            InsertDataIntoOverviewPanel(panel, data);
+            /*
+            let panel = CreateBlankWeatherOverviewPanel(index, location);
+
+            let data = await WeatherData.GetWeatherDataFromLocation(location);
+            InsertDataIntoOverviewPanel(panel, data, index);
+            */
+            let index = UserData.GenerateNewIndex();
+            let panel = CreateBlankWeatherOverviewPanel(index, userSearchInput.value);
+            InsertDataIntoOverviewPanel(panel, data, index);
             _searchInProgress = false;
             userSearchInput.value = "";
             CloseNewPanelDialog();
@@ -169,23 +177,27 @@ export const DOM_Controller = (function () {
         }
     }
 
-    async function SwitchToDetails(data) {
+    async function SwitchToDetails(panel) {
         OverviewRoot.style.display = "none";
         DetailsRoot.style.display = "grid";
 
         //let data = await WeatherData.GetWeatherDataFromLocation(location);
-        InsertDataIntoDetailsPage(data);
+        _currentPanel = panel;
+        InsertDataIntoDetailsPage(panel);
 
     }
 
     function SwitchToOverview() {
         OverviewRoot.style.display = "grid";
         DetailsRoot.style.display = "none";
+        _currentPanel = null;
     }
 
-    function InsertDataIntoDetailsPage(data) {
-        console.log(data);
+    function InsertDataIntoDetailsPage(panel) {
+        //console.log(data);
+        console.log(panel.id);
 
+        let data = UserData.FetchData(panel.id);
         let today = data.days[0];
 
         const locationSpan = document.querySelector("#detailsSection #locationSpan");
@@ -193,16 +205,15 @@ export const DOM_Controller = (function () {
         const timeSpan = document.querySelector("#detailsSection #timeSpan");
         locationSpan.textContent = data.resolvedAddress;
         dateSpan.textContent = new Date(today.datetime).toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', });
-        timeSpan.textContent = WeatherData.GetCurrentTimeInTimezone(data.tzoffset);
+        timeSpan.textContent = UserData.GetCurrentTimeByIndex(panel.id);
 
         const temperatureReading = document.querySelector("#detailsSection .temperatureReading");
-        temperatureReading.textContent = today.temp;
+        temperatureReading.textContent = UserData.GetCurrentTemperatureByIndex(panel.id);
 
         const feelsLikeSpan = document.querySelector("#detailsSection #feelsLikeSpan");
         feelsLikeSpan.textContent = `feels like ${today.feelslike}°`;
 
-        const TemperatureUnitsSymbol = document.querySelector("#detailsSection .TemperatureUnitsSymbol");
-        TemperatureUnitsSymbol.textContent = "c";
+        document.querySelector("#detailsSection .TemperatureUnitsSymbol").textContent = UserData.GetTemperatureSymbol();
 
         const conditionImg = document.querySelector("#detailsSection #conditionImg");
         ApplyConditionsImage(conditionImg, today.conditions);
@@ -237,22 +248,20 @@ export const DOM_Controller = (function () {
         });
     }
 
-    async function CreateWeatherOverviewPanelAndFetchData(location, index = -1) {
-        //UserData.InsertNewPlace(location);
-        
-        let panel = CreateBlankWeatherOverviewPanel(index);
+    async function CreateWeatherOverviewPanelAndFetchData(location, index) {
+        let panel = CreateBlankWeatherOverviewPanel(index, location);
 
         let data = await WeatherData.GetWeatherDataFromLocation(location);
-        UserData.InsertNewPlace(location, data);
-        InsertDataIntoOverviewPanel(panel, data);
+        InsertDataIntoOverviewPanel(panel, data, index);
     }
 
-    function InsertDataIntoOverviewPanel(panel, data) {
+    function InsertDataIntoOverviewPanel(panel, data, index) {
+        UserData.WriteData(index, data);
 
         let today = data.days[0];
 
         panel.querySelector("#locationSpan").textContent = data.resolvedAddress;
-        panel.querySelector("#timeSpan").textContent = WeatherData.GetCurrentTimeInTimezone(data.tzoffset, UserData.GetUse12Hour());
+        panel.querySelector("#timeSpan").textContent = UserData.GetCurrentTimeByIndex(panel.id);
 
         panel.querySelector(".temperatureReading").textContent = today.temp;
         panel.querySelector("#feelsLikeSpan").textContent = `feels like ${today.feelslike}°`;
@@ -263,11 +272,13 @@ export const DOM_Controller = (function () {
         ApplyConditionsImage(panel.querySelector("#conditionImg"), today.conditions);
 
         panel.addEventListener('click', () => {
-            SwitchToDetails(data);
+            SwitchToDetails(panel);
         });
     }
 
-    function CreateBlankWeatherOverviewPanel(index = -1) {
+    function CreateBlankWeatherOverviewPanel(index, location) {
+
+        UserData.InsertNewPlace(location);
 
         let panel = DOM_Helper.InsertDivAtTop(OverviewPanelsRoot, ["WeatherOverviewPanel"]);
         panel.id = index; // this needs to come from the backend, but
@@ -293,26 +304,33 @@ export const DOM_Controller = (function () {
                     let feelsLike = DOM_Helper.AppendSpan(rightDiv, "-");
                     feelsLike.id = "feelsLikeSpan";
 
-
         return panel;
     }
 
     function RefreshDataFormat() {
+        UserData.DebugPrintouts();
+        
         let AllPanels = OverviewPanelsRoot.querySelectorAll(".WeatherOverviewPanel");
         for (let i = 0; i < AllPanels.length; i++) {
             let panel = AllPanels[i];
 
             let temperatureReading = panel.querySelector(".TemperatureUnitsSymbol");
             if (temperatureReading.textContent != UserData.GetTemperatureSymbol()) {
-                console.log("need to update");
 
                 temperatureReading.textContent = UserData.GetTemperatureSymbol();
-                panel.querySelector(".temperatureReading").textContent = UserData.GetCurrentTemperature(panel.id);
-                console.log(panel.id);
+                panel.querySelector(".temperatureReading").textContent = UserData.GetCurrentTemperatureByIndex(panel.id);
+                //console.log(panel.id);
             }
-        }
-    }
 
+            let timeSpan = panel.querySelector("#timeSpan");
+            timeSpan.textContent = UserData.GetCurrentTimeByIndex(panel.id);
+        }
+
+        if (_currentPanel)
+            InsertDataIntoDetailsPage(_currentPanel);
+
+
+    }
 
     return {
         TestFunction,
