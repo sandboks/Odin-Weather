@@ -9,17 +9,47 @@
     <!--DIALOG-->
         <dialog id="addNewLocationDialog"> <!-- open=""-->
             <div class="closeButtonDiv">
-                <img src="7bbf47780fb42aed09bf.svg" id="panelCloseButton" class="buttonImage">
+                <img src="7bbf47780fb42aed09bf.svg" id="DialogCloseButton" class="buttonImage">
             </div>
             <div class="addNewBookDialogDiv">
-                <h1 id="dialogHeaderText">New</h1>
-                <form method="dialog" id="addNewBookForm">
-                        <div>
-                            <input type="text" name="title" placeholder="" id="userSearchInput">
-                        </div>
-                        <span id="searchErrorText"></span>
-                </form>
+                <h1 id="dialogHeaderText">New location</h1>
+                <div style="position: relative;">
+                    <input type="text" name="title" placeholder="" id="userSearchInput">
+                    <span id="searchErrorText"></span>
+                </div>
                 <button id="AddNewLocationButton">Add</button>
+            </div>
+        </dialog>
+        <div class="dialogBackdrop" style="display: none;"></div>
+
+        <!--SETTINGS DIALOG-->
+        <dialog id="SettingsDialog"> <!-- open=""-->
+            <div class="closeButtonDiv">
+                <img src="7bbf47780fb42aed09bf.svg" id="DialogCloseButton" class="buttonImage">
+            </div>
+            <div class="addNewBookDialogDiv">
+                <h1 id="dialogHeaderText">User settings</h1>
+                <div class="SideGrid">
+                    <span>Temperature units:</span>
+                    <div class="TwoOptionToggleBacking" id="UnitsToggle">
+                        <div class="TwoOptionToggle" id="TemperatureToggle">
+                            <span class="Selected">C</span>
+                            <span>F</span>
+                            <div class="TwoOptionToggleHighlight"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="SideGrid">
+                    <span>Time format:</span>
+                    <div class="TwoOptionToggleBacking" id="TimeToggle">
+                        <div class="TwoOptionToggle" id="TemperatureToggle">
+                            <span class="Selected">24h</span>
+                            <span>12h</span>
+                            <div class="TwoOptionToggleHighlight"></div>
+                        </div>
+                    </div>
+                </div>
+                <button id="DeleteUserDataButton">Delete user data</button>
             </div>
         </dialog>
         <div class="dialogBackdrop" style="display: none;"></div>
@@ -29,7 +59,7 @@
         <div class="TitleBanner">        
             <h2>Odin Weather</h2>
             <div class="perfectSquare">
-                <div class="CircleButton">
+                <div class="CircleButton" id="SettingsButton">
                     <img src="21a2bc942cb9bc7cfffa.svg" draggable="false">
                 </div>
             </div>
