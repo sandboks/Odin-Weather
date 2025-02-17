@@ -88,6 +88,56 @@ dialog button {
 #searchErrorText {
     position: absolute;
     text-align: center;
-    align-self: center;
+    top: 100%;
+    left: 0;
     color: red;
+    width: 100%;
+}
+
+/*
+TWO OPTION TOGGLE BUTTON
+*/
+
+.TwoOptionToggleBacking {
+    background-color: silver;
+    padding: 0.25em;
+}
+
+.TwoOptionToggle {
+    color: black;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+
+    cursor: pointer;
+}
+
+.TwoOptionToggle span.Selected {
+    
+}
+
+.TwoOptionToggleHighlight {
+    height: 100%;
+    width: 50%;
+    /* width: 100%; */
+    position: absolute;
+    background-color: white;
+    /* box-sizing: border-box; */    
+    /* left: 50%; */    
+    outline: 0.25em solid var(--color-main);
+    transform: translate(0%, 0);
+    transition-duration: .1s;
+}
+
+.TwoOptionToggleHighlight.Clicked {
+    transform: translate(100%, 0);
+}
+
+.TwoOptionToggle span {
+    padding: 0.5em;
+    z-index: 1;
+    user-select: none;
 }

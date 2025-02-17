@@ -20,14 +20,19 @@ export const DOM_Controller = (function () {
     const DetailsRoot = document.querySelector("#detailsSection");
 
     const AddNewPanelButton = document.querySelector(".AddNewPanelButton");
-    const dialogParentDiv = document.querySelector(".dialogParentDiv");
     const addNewLocationDialog = document.querySelector("#addNewLocationDialog");
-    const panelCloseButton = document.querySelector("#panelCloseButton");
+    const DialogCloseButton = addNewLocationDialog.querySelector("#DialogCloseButton");
     const dialogBackdrop = document.querySelector(".dialogBackdrop");
     const AddNewLocationButton = document.querySelector("#AddNewLocationButton");
     const userSearchInput = document.querySelector("#userSearchInput");
     const searchErrorText = document.querySelector("#searchErrorText");
     const ReturnToOverviewButton = document.querySelector("#ReturnToOverviewButton");
+
+    const SettingsDialog = document.querySelector("#SettingsDialog");
+    const SettingsButton = document.querySelector("#SettingsButton");
+
+    const UnitsToggle = document.querySelector("#UnitsToggle");
+    const TimeToggle = document.querySelector("#TimeToggle");
 
     //let userData = new UserDataClass();
 
@@ -46,15 +51,13 @@ export const DOM_Controller = (function () {
             OpenNewPanelDialog();
         });
 
-        panelCloseButton.addEventListener('click', () => {
-            CloseNewPanelDialog();
-        });
-
-        dialogBackdrop.addEventListener('click', () => {
+        DialogCloseButton.addEventListener('click', () => {
             CloseNewPanelDialog();
         });
 
         AddNewLocationButton.addEventListener('click', () => {
+            if (_searchInProgress)
+                return;
             PerformLocationSearch();
         });
 
@@ -67,9 +70,15 @@ export const DOM_Controller = (function () {
             var isInDialog = (rect.top <= event.clientY && event.clientY <= rect.top + rect.height &&
                 rect.left <= event.clientX && event.clientX <= rect.left + rect.width);
             if (!isInDialog) {
-                addNewLocationDialog.close();
-  }
+                CloseNewPanelDialog();
+            }
         });
+
+        SettingsButton.addEventListener('click', () => {
+            OpenSettingsDialog();
+        });
+
+        AddListenersToDialog(SettingsDialog);
     }
 
     function OpenNewPanelDialog() {
@@ -108,8 +117,56 @@ export const DOM_Controller = (function () {
         }
 
         AddNewLocationButton.textContent = "Add";
-        
+    }
 
+    function OpenSettingsDialog() {
+        SettingsDialog.showModal();
+    }
+
+    function AddListenersToDialog(dialog) {
+        let CloseButton = dialog.querySelector("#DialogCloseButton");
+        CloseButton.addEventListener('click', (event) => {
+            dialog.close();
+        });
+
+        dialog.addEventListener('click', (event) => {
+            var rect = dialog.getBoundingClientRect();
+            var isInDialog = (rect.top <= event.clientY && event.clientY <= rect.top + rect.height &&
+                rect.left <= event.clientX && event.clientX <= rect.left + rect.width);
+            if (!isInDialog) {
+                dialog.close();
+            }
+        });
+
+        let Toggles = dialog.querySelectorAll(".TwoOptionToggleBacking");
+        for (let i = 0; i < Toggles.length; i++) {
+            let toggle = Toggles[i];
+            toggle.addEventListener('click', () => {
+                ClickToggle(toggle);
+            });    
+        }
+    }
+
+    function ClickToggle(toggle) {
+        let TwoOptionToggleHighlight = toggle.querySelector(".TwoOptionToggleHighlight");
+        if (TwoOptionToggleHighlight.classList.contains("Clicked")) {
+            TwoOptionToggleHighlight.classList.remove("Clicked");
+        }
+        else {
+            TwoOptionToggleHighlight.classList.add("Clicked");
+        }
+
+        //console.log(toggle.id);
+        switch (toggle.id) {
+            case "UnitsToggle":
+                UserData.ToggleUnits();
+                RefreshDataFormat();
+                break;
+            case "TimeToggle":
+                UserData.ToggleTimeFormat();
+                RefreshDataFormat();
+                break;
+        }
     }
 
     async function SwitchToDetails(data) {
@@ -176,7 +233,6 @@ export const DOM_Controller = (function () {
 
     async function CreateOverviewPanels(list) {
         await list.forEach(locationString => { 
-            UserData.InsertNewPlace(locationString);
             CreateWeatherOverviewPanelAndFetchData(locationString, UserData.GenerateNewIndex());
         });
     }
@@ -187,6 +243,7 @@ export const DOM_Controller = (function () {
         let panel = CreateBlankWeatherOverviewPanel(index);
 
         let data = await WeatherData.GetWeatherDataFromLocation(location);
+        UserData.InsertNewPlace(location, data);
         InsertDataIntoOverviewPanel(panel, data);
     }
 
@@ -238,7 +295,22 @@ export const DOM_Controller = (function () {
 
 
         return panel;
+    }
 
+    function RefreshDataFormat() {
+        let AllPanels = OverviewPanelsRoot.querySelectorAll(".WeatherOverviewPanel");
+        for (let i = 0; i < AllPanels.length; i++) {
+            let panel = AllPanels[i];
+
+            let temperatureReading = panel.querySelector(".TemperatureUnitsSymbol");
+            if (temperatureReading.textContent != UserData.GetTemperatureSymbol()) {
+                console.log("need to update");
+
+                temperatureReading.textContent = UserData.GetTemperatureSymbol();
+                panel.querySelector(".temperatureReading").textContent = UserData.GetCurrentTemperature(panel.id);
+                console.log(panel.id);
+            }
+        }
     }
 
 
