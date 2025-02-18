@@ -33,11 +33,16 @@ export const DOM_Controller = (function () {
 
     const UnitsToggle = document.querySelector("#UnitsToggle");
     const TimeToggle = document.querySelector("#TimeToggle");
+    const DeleteUserDataButton = document.querySelector("#DeleteUserDataButton");
 
     //let userData = new UserDataClass();
 
     let _searchInProgress = false;
     let _currentPanel = null;
+
+    function Initialize() {
+        SetToggles();
+    }
     
     async function TestFunction() {
         console.log("Hello, world");
@@ -80,6 +85,10 @@ export const DOM_Controller = (function () {
         });
 
         AddListenersToDialog(SettingsDialog);
+
+        DeleteUserDataButton.addEventListener('click', () => {
+            UserData.DeleteAllData();
+        });
     }
 
     function OpenNewPanelDialog() {
@@ -97,6 +106,8 @@ export const DOM_Controller = (function () {
 
     async function PerformLocationSearch() {
         _searchInProgress = true;
+        console.log("PERFORM SEARCH");
+        UserData.DebugPrintouts();
 
         AddNewLocationButton.textContent = "Searching...";
         searchErrorText.textContent = "";
@@ -121,6 +132,7 @@ export const DOM_Controller = (function () {
             InsertDataIntoOverviewPanel(panel, data, index);
             _searchInProgress = false;
             userSearchInput.value = "";
+            UserData.SaveData();
             CloseNewPanelDialog();
         }
 
@@ -175,6 +187,21 @@ export const DOM_Controller = (function () {
                 RefreshDataFormat();
                 break;
         }
+    }
+
+    function SetToggles() {
+        console.log(`${UserData.GetUseCelcius()} / ${UserData.GetUse12Hour()}`);
+        let UnitsToggleHighlight = document.querySelector("#UnitsToggle .TwoOptionToggleHighlight");
+        if (!UserData.GetUseCelcius()) {
+            console.log("click on celcius toggle");
+            UnitsToggleHighlight.classList.add("Clicked");
+        }
+        else {
+            console.log("Don't, I guess?");
+        }
+        let TimeToggleHighlight = document.querySelector("#TimeToggle .TwoOptionToggleHighlight");
+        if (!UserData.GetUse12Hour())
+            TimeToggleHighlight.classList.add("Clicked");
     }
 
     async function SwitchToDetails(panel) {
@@ -313,6 +340,7 @@ export const DOM_Controller = (function () {
         let AllPanels = OverviewPanelsRoot.querySelectorAll(".WeatherOverviewPanel");
         for (let i = 0; i < AllPanels.length; i++) {
             let panel = AllPanels[i];
+            //console.log(panel.id);
 
             let temperatureReading = panel.querySelector(".TemperatureUnitsSymbol");
             if (temperatureReading.textContent != UserData.GetTemperatureSymbol()) {
@@ -333,6 +361,7 @@ export const DOM_Controller = (function () {
     }
 
     return {
+        Initialize,
         TestFunction,
         CreateOverviewPanels,
     };

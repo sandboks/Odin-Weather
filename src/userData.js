@@ -3,12 +3,14 @@ Class to handle user settings and saved data
 */
 
 export const UserData = (function () {
-    let use12hour = false;
     let useCelcius = true;
+    let use12hour = false;
 
     let savedPlaces = [];
     let savedData = [];
     let _panelsCreated = 0;
+
+    let _savingDisabled = false;
 
     function GetTemperatureSymbol() {
         return (useCelcius ? "C" : "F");
@@ -56,23 +58,25 @@ export const UserData = (function () {
     }
 
     function GetUse12Hour() {
+        console.log(use12hour);
         return use12hour;
+    }
+
+    function GetUseCelcius() {
+        console.log(useCelcius);
+        return useCelcius;
     }
 
     // inserts a new place at the front of the list, so the latest one should always be at the top
     function InsertNewPlace(place) {
         savedPlaces.unshift(place);
         //savedData.unshift(data);
-        savedData.unshift(null);
-        console.log(savedPlaces);
+        savedData.push(null);
+        //console.log(savedPlaces);
     }
 
     function WriteData(index, data) {
-        DebugPrintouts();
-        console.log(index);
-        console.log(data);
         savedData[index] = data;
-        console.log(savedData);
     }
 
     function FetchData(index) {
@@ -85,10 +89,12 @@ export const UserData = (function () {
 
     function ToggleUnits() {
         useCelcius = !useCelcius;
+        SaveData();
     }
 
     function ToggleTimeFormat() {
         use12hour = !use12hour;
+        SaveData();
     }
 
     function DebugPrintouts() {
@@ -96,11 +102,78 @@ export const UserData = (function () {
         console.log(savedData);
     }
 
+    /*
+    LOCAL SAVE DATA
+    */
+
+    function Initialize() {
+        // try loading data. If this succeeds, then don't show the popup
+        if (LoadData()) {
+            return;
+        }
+
+
+        //ShowInitialPopup();
+    }
+
+    function SaveData() {
+        if (_savingDisabled)
+            return;
+        
+        //FrontEnd.ResyncFrontendToData(_currentQuest);
+
+    //let savedPlaces = [];
+    //let savedData = [];
+    //let _panelsCreated = 0;
+
+        localStorage.setItem("use12hour", use12hour);
+        localStorage.setItem("useCelcius", useCelcius);
+        localStorage.setItem("savedPlaces", JSON.stringify(savedPlaces));
+        localStorage.setItem("_panelsCreated", _panelsCreated);
+        //localStorage.setItem("_quests", JSON.stringify(_quests));
+        //localStorage.setItem("_currentQuest", (_currentQuest == null ? -1 : _currentQuest.id)); // store the ID
+        //localStorage.setItem("_questsGenerated", (_questsGenerated));
+
+        console.log("SAVE COMPLETE");
+    }
+
+    function LoadData() {
+        if (localStorage.getItem("use12hour") == null)
+            return false;
+        
+        use12hour = JSON.parse(localStorage.getItem("use12hour"));
+        //console.log(user12hour);
+        useCelcius = JSON.parse(localStorage.getItem("useCelcius"));
+        console.log("SAVE DATA LOADED");
+
+        /*
+        let userData = JSON.parse(localStorage.getItem("_userData"));
+        //console.log(userData);
+        if (userData == null)
+            return false;
+        else {
+            let questsGenerated = localStorage.getItem("_questsGenerated");
+            let questsData = JSON.parse(localStorage.getItem("_quests"));
+            let currentQuestID = localStorage.getItem("_currentQuest");
+            LoadGivenData(userData, questsData, questsGenerated, currentQuestID);
+        }
+        */
+        return true;
+    }
+
+    function DeleteAllData() {
+        //_doNotSave = true;
+        localStorage.clear();
+        // refresh the page
+        location.reload();
+    }
+
 
     return {
         GetTemperatureSymbol,
         GetTemperatureString,
         GetUse12Hour,
+        GetUseCelcius,
         InsertNewPlace,
         GenerateNewIndex,
         ToggleUnits,
@@ -110,6 +183,10 @@ export const UserData = (function () {
         WriteData,
         FetchData,
         DebugPrintouts,
+        Initialize,
+        SaveData,
+        LoadData,
+        DeleteAllData,
         //TestFunction,
     };
 

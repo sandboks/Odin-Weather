@@ -32,7 +32,7 @@ export const WeatherData = (function () {
         const data = await response.json();
 
 
-        GetCurrentTimeInTimezone(data.tzoffset);
+       // GetCurrentTimeInTimezone(data.tzoffset);
 
         let resolvedAddress = data.resolvedAddress;
 
@@ -42,30 +42,9 @@ export const WeatherData = (function () {
         return data;
     }
 
-    function GetCurrentTimeInTimezone(timezone, use12hour = false) {
-        // create Date object for current location
-        var date = new Date();
-
-        // convert to milliseconds, add local time zone offset and get UTC time in milliseconds
-        var utcTime = date.getTime() + (date.getTimezoneOffset() * 60000);
-
-        // create new Date object for a different timezone using supplied its GMT offset.
-        var currentTime = new Date(utcTime + (3600000 * timezone));
-
-        currentTime.getTimezoneOffset();
-        let options = { timeStyle: 'short', hour12: use12hour };
-        //let returnString = (use12hour ? currentTime.toLocaleTimeString('en-US', options) : "");
-
-        //console.log(`The time in this place is: ${currentTime.toLocaleTimeString()}`);
-
-
-        return currentTime.toLocaleTimeString('en-US', options);
-    }
-
     return {
         PerformWeatherSearch,
         GetWeatherDataFromLocation,
-        GetCurrentTimeInTimezone,
     };
 
 })();
