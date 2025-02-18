@@ -42,13 +42,12 @@ export const DOM_Controller = (function () {
 
     function Initialize() {
         SetToggles();
-    }
-    
-    async function TestFunction() {
-        console.log("Hello, world");
+        //console.log("Hello, world");
         //console.log(userData.Get12hour());
         SwitchToOverview();
         AddEventListeners();
+
+        CreateOverviewPanels(UserData.GetSavedPlaces());
     }
 
     function AddEventListeners() {
@@ -190,17 +189,13 @@ export const DOM_Controller = (function () {
     }
 
     function SetToggles() {
-        console.log(`${UserData.GetUseCelcius()} / ${UserData.GetUse12Hour()}`);
+        //console.log(`${UserData.GetUseCelcius()} / ${UserData.GetUse12Hour()}`);
         let UnitsToggleHighlight = document.querySelector("#UnitsToggle .TwoOptionToggleHighlight");
         if (!UserData.GetUseCelcius()) {
-            console.log("click on celcius toggle");
             UnitsToggleHighlight.classList.add("Clicked");
         }
-        else {
-            console.log("Don't, I guess?");
-        }
         let TimeToggleHighlight = document.querySelector("#TimeToggle .TwoOptionToggleHighlight");
-        if (!UserData.GetUse12Hour())
+        if (UserData.GetUse12Hour())
             TimeToggleHighlight.classList.add("Clicked");
     }
 
@@ -276,6 +271,7 @@ export const DOM_Controller = (function () {
     }
 
     async function CreateWeatherOverviewPanelAndFetchData(location, index) {
+        console.log(location);
         let panel = CreateBlankWeatherOverviewPanel(index, location);
 
         let data = await WeatherData.GetWeatherDataFromLocation(location);
@@ -290,7 +286,7 @@ export const DOM_Controller = (function () {
         panel.querySelector("#locationSpan").textContent = data.resolvedAddress;
         panel.querySelector("#timeSpan").textContent = UserData.GetCurrentTimeByIndex(panel.id);
 
-        panel.querySelector(".temperatureReading").textContent = today.temp;
+        panel.querySelector(".temperatureReading").textContent = UserData.GetCurrentTemperatureByIndex(index);
         panel.querySelector("#feelsLikeSpan").textContent = `feels like ${today.feelslike}°`;
         panel.querySelector(".TemperatureUnitsSymbol").textContent = UserData.GetTemperatureSymbol();
 
@@ -362,7 +358,6 @@ export const DOM_Controller = (function () {
 
     return {
         Initialize,
-        TestFunction,
         CreateOverviewPanels,
     };
 

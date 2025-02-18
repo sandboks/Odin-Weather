@@ -17,7 +17,7 @@ export const UserData = (function () {
     }
 
     function GetTemperatureString() {
-        return useCelcius ? "metric" : "us";
+        return useCelcius ? "metric" : "metric"; //"us"
     }
 
     function GetCurrentTemperatureByIndex(index) {
@@ -107,13 +107,22 @@ export const UserData = (function () {
     */
 
     function Initialize() {
-        // try loading data. If this succeeds, then don't show the popup
+        // try loading data. If this succeeds, then don't load default values
         if (LoadData()) {
             return;
         }
 
-
+        useCelcius = true;
+        use12hour = false;
+        console.log(savedPlaces);
+        //console.log(["tokyo", "sydney", "new york"]);
+        savedPlaces = ["tokyo", "sydney", "new york"];
+        console.log(savedPlaces);
         //ShowInitialPopup();
+    }
+
+    function GetSavedPlaces() {
+        return savedPlaces;
     }
 
     function SaveData() {
@@ -144,6 +153,7 @@ export const UserData = (function () {
         use12hour = JSON.parse(localStorage.getItem("use12hour"));
         //console.log(user12hour);
         useCelcius = JSON.parse(localStorage.getItem("useCelcius"));
+        savedPlaces = JSON.parse(localStorage.getItem("savedPlaces"));
         console.log("SAVE DATA LOADED");
 
         /*
@@ -174,6 +184,7 @@ export const UserData = (function () {
         GetTemperatureString,
         GetUse12Hour,
         GetUseCelcius,
+        GetSavedPlaces,
         InsertNewPlace,
         GenerateNewIndex,
         ToggleUnits,
