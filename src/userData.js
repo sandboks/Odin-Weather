@@ -112,11 +112,15 @@ export const UserData = (function () {
             return;
         }
 
+        console.log("No save data present. Writing default values:");
+
         useCelcius = true;
         use12hour = false;
+
+        savedPlaces = [];
         console.log(savedPlaces);
         //console.log(["tokyo", "sydney", "new york"]);
-        savedPlaces = ["tokyo", "sydney", "new york"];
+        savedPlaces = ["tokyo", "sydney"];
         console.log(savedPlaces);
         //ShowInitialPopup();
     }
