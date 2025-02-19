@@ -10,6 +10,7 @@ import { UserData } from "./userData.js";
 //import imgSnow from "./img/weather/wi_snowman.svg";
 import imgUnknown from "./img/weather/cloud-question-outline.svg";
 import imgSunny from "./img/weather/clearDay.png";
+import imgNight from "./img/weather/clearNight.png"
 import imgSnow from "./img/weather/snow.png";
 import imgCloud from "./img/weather/cloud.png";
 import imgRain from "./img/weather/rain.png";
@@ -110,6 +111,7 @@ export const DOM_Controller = (function () {
         if (_searchInProgress)
             return;
         addNewLocationDialog.close();
+        searchErrorText.textContent = "";
         //dialogParentDiv.style.display = "none";
     }
 
@@ -231,29 +233,35 @@ export const DOM_Controller = (function () {
         console.log(panel.id);
 
         let data = UserData.FetchData(panel.id);
-        let today = data.days[0];
+        let today = data.currentConditions; //data.days[0];
+        console.log(data);
 
         const locationSpan = document.querySelector("#detailsSection #locationSpan");
         const dateSpan = document.querySelector("#detailsSection #dateSpan");
         const timeSpan = document.querySelector("#detailsSection #timeSpan");
         locationSpan.textContent = data.resolvedAddress;
-        dateSpan.textContent = new Date(today.datetime).toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', });
+        dateSpan.textContent = new Date(data.days[0].datetime).toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', });
         timeSpan.textContent = UserData.GetCurrentTimeByIndex(panel.id);
 
         const temperatureReading = document.querySelector("#detailsSection .temperatureReading");
         temperatureReading.textContent = UserData.GetCurrentTemperatureByIndex(panel.id);
 
         const feelsLikeSpan = document.querySelector("#detailsSection #feelsLikeSpan");
-        feelsLikeSpan.textContent = `feels like ${today.feelslike}°`;
+        feelsLikeSpan.textContent = UserData.GetCurrentFeelsLikeByIndex(panel.id); //today.feelslike
 
         document.querySelector("#detailsSection .TemperatureUnitsSymbol").textContent = UserData.GetTemperatureSymbol();
 
         const conditionImg = document.querySelector("#detailsSection #conditionImg");
-        ApplyConditionsImage(conditionImg, today.conditions);
+        //ApplyConditionsImage(conditionImg, today.conditions);
+        ApplyConditionsImage(conditionImg, today.conditions, UserData.GetIsNightTimeByIndex(panel.id));
+
+        document.querySelector("#uvSpan").textContent = today.uvindex;
+        document.querySelector("#uvRecommendation").textContent = (today.uvindex >= 3 ? "Sun protection recommended" : "");
+        document.querySelector("#humiditySpan").textContent = `${today.humidity.toFixed(0)}%`;
         
     }
 
-    function ApplyConditionsImage(conditionImg, todaysConditions) {
+    function ApplyConditionsImage(conditionImg, todaysConditions, isNightTime = false) {
         const conditions = [
             ["CLEAR", imgSunny],
             ["CLOUDY", imgCloud],
@@ -267,6 +275,9 @@ export const DOM_Controller = (function () {
             let condition = conditions[i];
             if (todaysConditions.toUpperCase().includes(condition[0])) {
                 conditionImg.src = condition[1];
+                if (i == 0 && isNightTime) {
+                    conditionImg.src = imgNight;
+                }
             }   
         }
     }
@@ -293,18 +304,18 @@ export const DOM_Controller = (function () {
     function InsertDataIntoOverviewPanel(panel, data, index) {
         UserData.WriteData(index, data);
 
-        let today = data.days[0];
+        let today = data.currentConditions; //data.days[0];
 
         panel.querySelector("#locationSpan").textContent = data.resolvedAddress;
         panel.querySelector("#timeSpan").textContent = UserData.GetCurrentTimeByIndex(panel.id);
 
         panel.querySelector(".temperatureReading").textContent = UserData.GetCurrentTemperatureByIndex(index);
-        panel.querySelector("#feelsLikeSpan").textContent = `feels like ${today.feelslike}°`;
+        panel.querySelector("#feelsLikeSpan").textContent = UserData.GetCurrentFeelsLikeByIndex(panel.id);
         panel.querySelector(".TemperatureUnitsSymbol").textContent = UserData.GetTemperatureSymbol();
 
 
         //console.log(data.resolvedAddress);
-        ApplyConditionsImage(panel.querySelector("#conditionImg"), today.conditions);
+        ApplyConditionsImage(panel.querySelector("#conditionImg"), today.conditions, UserData.GetIsNightTimeByIndex(index));
 
         panel.addEventListener('click', () => {
             SwitchToDetails(panel);
@@ -373,6 +384,7 @@ export const DOM_Controller = (function () {
 
                 temperatureReading.textContent = UserData.GetTemperatureSymbol();
                 panel.querySelector(".temperatureReading").textContent = UserData.GetCurrentTemperatureByIndex(panel.id);
+                panel.querySelector("#feelsLikeSpan").textContent = UserData.GetCurrentFeelsLikeByIndex(panel.id);
                 //console.log(panel.id);
             }
 

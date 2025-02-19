@@ -21,16 +21,23 @@ export const UserData = (function () {
     }
 
     function GetCurrentTemperatureByIndex(index) {
-        //console.log(_panelsCreated);
-        console.log(index);
-        let temp = savedData[index].days[0].temp;
+        let temp = savedData[index].currentConditions.temp; //savedData[index].days[0].temp;
         if (!useCelcius)
             temp = celcToFahr(temp);
         return temp;
         //return savedData[_panelsCreated - index - 1].days[0].temp;
     }
 
-    function GetCurrentTimeByIndex(index) {
+    function GetCurrentFeelsLikeByIndex(index) {
+        let temp = savedData[index].currentConditions.feelslike; //savedData[index].days[0].temp;
+        if (temp == savedData[index].currentConditions.temp)
+            return "";
+        if (!useCelcius)
+            temp = celcToFahr(temp);
+        return `feels like ${temp}°`;
+    }
+
+    function GetCurrentTimeByIndex(index, options = { timeStyle: 'short', hour12: use12hour }) {
         if (savedData[index] == null)
             console.log("ERROR: NULL DATA");
         let timezone = savedData[index].tzoffset;
@@ -45,7 +52,6 @@ export const UserData = (function () {
         var currentTime = new Date(utcTime + (3600000 * timezone));
 
         currentTime.getTimezoneOffset();
-        let options = { timeStyle: 'short', hour12: use12hour };
         //let returnString = (use12hour ? currentTime.toLocaleTimeString('en-US', options) : "");
 
         //console.log(`The time in this place is: ${currentTime.toLocaleTimeString()}`);
@@ -65,6 +71,14 @@ export const UserData = (function () {
     function GetUseCelcius() {
         console.log(useCelcius);
         return useCelcius;
+    }
+    function GetIsNightTimeByIndex(index) {
+        let sunrise = savedData[index].currentConditions.sunrise; // "06:44:10"
+        let sunset = savedData[index].currentConditions.sunset; //"17:36:08"
+
+        let currentTime = GetCurrentTimeByIndex(index, {hour12: false});
+
+        return !(sunrise <= currentTime && currentTime <= sunset);
     }
 
     // inserts a new place at the front of the list, so the latest one should always be at the top
@@ -176,18 +190,6 @@ export const UserData = (function () {
         savedPlaces = JSON.parse(localStorage.getItem("savedPlaces"));
         console.log("SAVE DATA LOADED");
 
-        /*
-        let userData = JSON.parse(localStorage.getItem("_userData"));
-        //console.log(userData);
-        if (userData == null)
-            return false;
-        else {
-            let questsGenerated = localStorage.getItem("_questsGenerated");
-            let questsData = JSON.parse(localStorage.getItem("_quests"));
-            let currentQuestID = localStorage.getItem("_currentQuest");
-            LoadGivenData(userData, questsData, questsGenerated, currentQuestID);
-        }
-        */
         return true;
     }
 
@@ -211,7 +213,9 @@ export const UserData = (function () {
         ToggleUnits,
         ToggleTimeFormat,
         GetCurrentTemperatureByIndex,
+        GetCurrentFeelsLikeByIndex,
         GetCurrentTimeByIndex,
+        GetIsNightTimeByIndex,
         WriteData,
         FetchData,
         DebugPrintouts,

@@ -51,6 +51,9 @@ body {
 .PanelGrid {
     display: grid;
     gap: 1em;
+    grid-template-columns: 1fr 1fr;
+
+    min-width: 280px;
 }
 
 /*
@@ -143,12 +146,17 @@ MAIN WEATHER PANEL
 
 .AddNewPanelButton {
     border: solid 0.25em var(--color-grey);
+    background-color: white;
     border-radius: 1em;
     padding: 0.5em;
     font-weight: bolder;
     font-size: x-large;
 
     cursor: pointer;
+    /*
+    grid-column: span 2;
+    */
+    grid-column: 1 / -1;
 }
 
 .WeatherPanel, .WeatherOverviewPanel {
@@ -159,17 +167,33 @@ MAIN WEATHER PANEL
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    grid-column: span 2;
+}
+
+.WeatherPanel.HalfLength {
+    grid-column: auto;
+}
+
+.WeatherPanel span {
+    text-align: center;
 }
 
 .WeatherOverviewPanel {
     cursor: pointer;
 }
 
-.WeatherPanelMainTemperature {
-    margin: 0 1em;
+.WeatherOverviewPanel:hover, .AddNewPanelButton:hover {
+    filter: brightness(0.95);
 }
 
-.WeatherPanelMainTemperature span {
+.WeatherPanelMainTemperature {
+    /*
+    margin: 0 1em;
+    */
+}
+
+.WeatherPanelMainTemperature span, .BigNumberFormat {
     font-size: xxx-large;
     font-weight: bold;
     font-family: 'ZenMaruRegular';
@@ -184,4 +208,24 @@ MAIN WEATHER PANEL
     /* bottom: 0.25em; */
     position: relative;
     left: 0.25em;
+}
+
+
+
+/*
+ASPECT RATIO
+*/
+
+/*
+larger than a mobile screen:
+*/
+
+@media (min-width: 665px) {
+    .PanelGrid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+
+    .WeatherPanel, .WeatherOverviewPanel {
+        grid-column: auto;
+    }
 }

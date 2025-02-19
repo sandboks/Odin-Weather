@@ -19,7 +19,7 @@ export const WeatherData = (function () {
     }
 
     async function GetWeatherDataFromLocation(location) {
-        let request = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?unitGroup=${UserData.GetTemperatureString()}&include=days&key=${apiKey}&contentType=json`;
+        let request = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?unitGroup=${UserData.GetTemperatureString()}&include=days,current&key=${apiKey}&contentType=json`;
 
         //const response = await fetch(request, {mode: 'cors'});
         //const data = await response.json();
