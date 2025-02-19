@@ -35,10 +35,13 @@ export const DOM_Controller = (function () {
     const TimeToggle = document.querySelector("#TimeToggle");
     const DeleteUserDataButton = document.querySelector("#DeleteUserDataButton");
 
+    const DeleteCurrentPanelButton = document.querySelector("#DeleteCurrentPanelButton");
+
     //let userData = new UserDataClass();
 
     let _searchInProgress = false;
     let _currentPanel = null;
+    let _deletedPanels = 0;
 
     function Initialize() {
         SetToggles();
@@ -47,7 +50,7 @@ export const DOM_Controller = (function () {
         SwitchToOverview();
         AddEventListeners();
 
-        CreateOverviewPanels(UserData.GetSavedPlaces());
+        CreateOverviewPanelsFromSavedData(UserData.GetSavedPlaces());
     }
 
     function AddEventListeners() {
@@ -88,6 +91,13 @@ export const DOM_Controller = (function () {
         DeleteUserDataButton.addEventListener('click', () => {
             UserData.DeleteAllData();
         });
+
+        DeleteCurrentPanelButton.addEventListener('click', () => {
+            UserData.DeleteLocation(_currentPanel.id);
+            DeletePanel(_currentPanel.id);
+            UserData.SaveData();
+            SwitchToOverview();
+        });
     }
 
     function OpenNewPanelDialog() {
@@ -127,7 +137,8 @@ export const DOM_Controller = (function () {
             InsertDataIntoOverviewPanel(panel, data, index);
             */
             let index = UserData.GenerateNewIndex();
-            let panel = CreateBlankWeatherOverviewPanel(index, userSearchInput.value);
+            UserData.InsertNewPlace(userSearchInput.value);
+            let panel = CreateBlankWeatherOverviewPanel(index);
             InsertDataIntoOverviewPanel(panel, data, index);
             _searchInProgress = false;
             userSearchInput.value = "";
@@ -264,15 +275,16 @@ export const DOM_Controller = (function () {
     create one of several panels in the "overview" page, which shows a summary of multiple locations at once
     */
 
-    async function CreateOverviewPanels(list) {
+    async function CreateOverviewPanelsFromSavedData(list) {
         await list.forEach(locationString => { 
             CreateWeatherOverviewPanelAndFetchData(locationString, UserData.GenerateNewIndex());
         });
+        UserData.DebugPrintouts();
     }
 
     async function CreateWeatherOverviewPanelAndFetchData(location, index) {
-        console.log(location);
-        let panel = CreateBlankWeatherOverviewPanel(index, location);
+        console.log("creating panel for: " + location);
+        let panel = CreateBlankWeatherOverviewPanel(index);
 
         let data = await WeatherData.GetWeatherDataFromLocation(location);
         InsertDataIntoOverviewPanel(panel, data, index);
@@ -299,9 +311,7 @@ export const DOM_Controller = (function () {
         });
     }
 
-    function CreateBlankWeatherOverviewPanel(index, location) {
-
-        UserData.InsertNewPlace(location);
+    function CreateBlankWeatherOverviewPanel(index) {
 
         let panel = DOM_Helper.InsertDivAtTop(OverviewPanelsRoot, ["WeatherOverviewPanel"]);
         panel.id = index; // this needs to come from the backend, but
@@ -328,6 +338,26 @@ export const DOM_Controller = (function () {
                     feelsLike.id = "feelsLikeSpan";
 
         return panel;
+    }
+
+    function DeletePanel(index) {
+        //let panel = OverviewPanelsRoot.querySelector(`.WeatherOverviewPanel #${index}`);
+        let panel = document.getElementById(index);
+        console.log(panel);
+        panel.remove();
+        //_deletedPanels++;
+
+        let AllPanels = OverviewPanelsRoot.querySelectorAll(".WeatherOverviewPanel");
+        //console.log(typeof AllPanels);
+        AllPanels = [...AllPanels]; // convert to an array so it can be reversed
+        //console.log(typeof AllPanels);
+        AllPanels.reverse();
+
+        UserData.ResetIndexCount();
+        AllPanels.forEach(panel => {
+            //console.log(panel.id);
+            panel.id = UserData.GenerateNewIndex();
+        });
     }
 
     function RefreshDataFormat() {
@@ -358,7 +388,7 @@ export const DOM_Controller = (function () {
 
     return {
         Initialize,
-        CreateOverviewPanels,
+        CreateOverviewPanels: CreateOverviewPanelsFromSavedData,
     };
 
 })();

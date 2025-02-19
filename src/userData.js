@@ -69,10 +69,20 @@ export const UserData = (function () {
 
     // inserts a new place at the front of the list, so the latest one should always be at the top
     function InsertNewPlace(place) {
-        savedPlaces.unshift(place);
+        //savedPlaces.unshift(place);
+        savedPlaces.push(place);
         //savedData.unshift(data);
         savedData.push(null);
-        //console.log(savedPlaces);
+        console.log(savedPlaces);
+    }
+
+    function DeleteLocation(index) {
+        DebugPrintouts();
+        //array.splice(index, 1);
+        savedPlaces.splice(index, 1);
+        savedData.splice(index, 1);
+        DebugPrintouts();
+        console.log(index);
     }
 
     function WriteData(index, data) {
@@ -81,6 +91,10 @@ export const UserData = (function () {
 
     function FetchData(index) {
         return savedData[index];
+    }
+
+    function ResetIndexCount() {
+        _panelsCreated = 0;
     }
 
     function GenerateNewIndex() {
@@ -116,12 +130,12 @@ export const UserData = (function () {
 
         useCelcius = true;
         use12hour = false;
-
-        savedPlaces = [];
-        console.log(savedPlaces);
-        //console.log(["tokyo", "sydney", "new york"]);
-        savedPlaces = ["tokyo", "sydney"];
-        console.log(savedPlaces);
+        
+        //savedPlaces = ["tokyo", "sydney", "new york"];
+        ["tokyo", "sydney", "new york"].forEach(location => {
+            InsertNewPlace(location);
+        });
+        DebugPrintouts();
         //ShowInitialPopup();
     }
 
@@ -147,6 +161,8 @@ export const UserData = (function () {
         //localStorage.setItem("_currentQuest", (_currentQuest == null ? -1 : _currentQuest.id)); // store the ID
         //localStorage.setItem("_questsGenerated", (_questsGenerated));
 
+        DebugPrintouts();
+        console.log(JSON.stringify(savedPlaces));
         console.log("SAVE COMPLETE");
     }
 
@@ -190,6 +206,7 @@ export const UserData = (function () {
         GetUseCelcius,
         GetSavedPlaces,
         InsertNewPlace,
+        ResetIndexCount,
         GenerateNewIndex,
         ToggleUnits,
         ToggleTimeFormat,
@@ -202,6 +219,7 @@ export const UserData = (function () {
         SaveData,
         LoadData,
         DeleteAllData,
+        DeleteLocation,
         //TestFunction,
     };
 
