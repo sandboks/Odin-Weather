@@ -175,7 +175,7 @@ MAIN WEATHER PANEL
     grid-column: auto;
 }
 
-.WeatherPanel span {
+.WeatherPanel span, .WeatherOverviewPanel span {
     text-align: center;
 }
 

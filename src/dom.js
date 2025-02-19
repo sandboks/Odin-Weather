@@ -121,6 +121,7 @@ export const DOM_Controller = (function () {
         UserData.DebugPrintouts();
 
         AddNewLocationButton.textContent = "Searching...";
+        AddNewLocationButton.classList.add("Disabled");
         searchErrorText.textContent = "";
 
         console.log(userSearchInput.textContent);
@@ -149,6 +150,7 @@ export const DOM_Controller = (function () {
         }
 
         AddNewLocationButton.textContent = "Add";
+        AddNewLocationButton.classList.remove("Disabled");
     }
 
     function OpenSettingsDialog() {
