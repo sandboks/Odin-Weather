@@ -11,9 +11,9 @@
             <div class="closeButtonDiv">
                 <img src="7bbf47780fb42aed09bf.svg" id="DialogCloseButton" class="buttonImage">
             </div>
-            <div class="addNewBookDialogDiv">
+            <div class="DialogContents">
                 <h1 id="dialogHeaderText">New location</h1>
-                <div style="position: relative;">
+                <div style="position: relative; margin-bottom: 1.5em;">
                     <input type="text" name="title" placeholder="" id="userSearchInput">
                     <span id="searchErrorText"></span>
                 </div>
@@ -27,7 +27,7 @@
             <div class="closeButtonDiv">
                 <img src="7bbf47780fb42aed09bf.svg" id="DialogCloseButton" class="buttonImage">
             </div>
-            <div class="addNewBookDialogDiv">
+            <div class="DialogContents">
                 <h1 id="dialogHeaderText">User settings</h1>
                 <div class="SideGrid">
                     <span>Temperature units:</span>
@@ -87,6 +87,7 @@
                 <span id="timeSpan">10:40</span>
             </div>
             <div class="WeatherPanel">
+                <span id="conditionsSpan">Conditions</span>
                 <div class="SideGrid">
                     <div class="CenteredImage">
                         <img src="0645932cbf8357485a75.svg" id="conditionImg">
@@ -100,6 +101,15 @@
                         <span id="feelsLikeSpan">feels like 2.1°</span>
                     </div>
                 </div>
+            </div>
+            <div class="WeatherPanel HalfLength">
+                <span>UV index</span>
+                <span class="BigNumberFormat" id="uvSpan">7</span>
+                <span id="uvRecommendation">Sun protection recommended</span>
+            </div>
+            <div class="WeatherPanel HalfLength">
+                <span>Humidity</span>
+                <span class="BigNumberFormat" id="humiditySpan">100%</span>
             </div>
         </div>
     </div>
