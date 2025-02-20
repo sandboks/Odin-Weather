@@ -133,12 +133,6 @@ export const DOM_Controller = (function () {
             _searchInProgress = false;
         }
         else {
-            /*
-            let panel = CreateBlankWeatherOverviewPanel(index, location);
-
-            let data = await WeatherData.GetWeatherDataFromLocation(location);
-            InsertDataIntoOverviewPanel(panel, data, index);
-            */
             let index = UserData.GenerateNewIndex();
             UserData.InsertNewPlace(userSearchInput.value);
             let panel = CreateBlankWeatherOverviewPanel(index);
@@ -235,15 +229,18 @@ export const DOM_Controller = (function () {
         console.log(panel.id);
 
         let data = UserData.FetchData(panel.id);
-        let today = data.currentConditions; //data.days[0];
+        let today = data.currentConditions;
         console.log(data);
 
         const locationSpan = document.querySelector("#detailsSection #locationSpan");
         const dateSpan = document.querySelector("#detailsSection #dateSpan");
         const timeSpan = document.querySelector("#detailsSection #timeSpan");
         locationSpan.textContent = data.resolvedAddress;
-        dateSpan.textContent = new Date(data.days[0].datetime).toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', });
+        dateSpan.textContent = new Date(data.days[1].datetime).toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', });
         timeSpan.textContent = UserData.GetCurrentTimeByIndex(panel.id);
+
+        const conditionsSpan = document.querySelector("#conditionsSpan");
+        conditionsSpan.textContent = today.conditions;
 
         const temperatureReading = document.querySelector("#detailsSection .temperatureReading");
         temperatureReading.textContent = UserData.GetCurrentTemperatureByIndex(panel.id);
@@ -254,8 +251,12 @@ export const DOM_Controller = (function () {
         document.querySelector("#detailsSection .TemperatureUnitsSymbol").textContent = UserData.GetTemperatureSymbol();
 
         const conditionImg = document.querySelector("#detailsSection #conditionImg");
-        //ApplyConditionsImage(conditionImg, today.conditions);
         ApplyConditionsImage(conditionImg, today.conditions, UserData.GetIsNightTimeByIndex(panel.id));
+
+        const temperatureCompareSpan = document.querySelector("#temperatureCompareSpan");
+        temperatureCompareSpan.textContent = UserData.GetCompareTemperatureByIndex(panel.id);
+        const uvCompareSpan = document.querySelector("#uvCompareSpan");
+        uvCompareSpan.textContent = UserData.GetCompareUvByIndex(panel.id);
 
         document.querySelector("#uvSpan").textContent = today.uvindex;
         document.querySelector("#uvRecommendation").textContent = (today.uvindex >= 3 ? "Sun protection recommended" : "");
@@ -267,11 +268,10 @@ export const DOM_Controller = (function () {
         const conditions = [
             ["CLEAR", imgSunny],
             ["CLOUDY", imgCloud],
+            ["OVERCAST", imgCloud],
             ["RAIN", imgRain],
             ["SNOW", imgSnow],
         ];
-
-        //console.log(todaysConditions.toUpperCase());
 
         for (let i = 0; i < conditions.length; i++) {
             let condition = conditions[i];
@@ -306,15 +306,19 @@ export const DOM_Controller = (function () {
     function InsertDataIntoOverviewPanel(panel, data, index) {
         UserData.WriteData(index, data);
 
-        let today = data.currentConditions; //data.days[0];
+        if (data == null) {
+            panel.querySelector("#locationSpan").textContent = `"${UserData.FetchSearchName(index)}" - no data :(`;
+            panel.querySelector("#timeSpan").textContent = `daily usage limited, try again tomorrow`;
+            return;
+        }
+
+        let today = data.currentConditions;
 
         panel.querySelector("#locationSpan").textContent = data.resolvedAddress;
         panel.querySelector("#timeSpan").textContent = UserData.GetCurrentTimeByIndex(panel.id);
-
         panel.querySelector(".temperatureReading").textContent = UserData.GetCurrentTemperatureByIndex(index);
         panel.querySelector("#feelsLikeSpan").textContent = UserData.GetCurrentFeelsLikeByIndex(panel.id);
         panel.querySelector(".TemperatureUnitsSymbol").textContent = UserData.GetTemperatureSymbol();
-
 
         //console.log(data.resolvedAddress);
         ApplyConditionsImage(panel.querySelector("#conditionImg"), today.conditions, UserData.GetIsNightTimeByIndex(index));

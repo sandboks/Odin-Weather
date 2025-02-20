@@ -81,6 +81,33 @@ export const UserData = (function () {
         return !(sunrise <= currentTime && currentTime <= sunset);
     }
 
+    function GetCompareTemperatureByIndex(index) {
+        let data = savedData[index];
+        let delta = (data.days[1].temp - data.days[0].temp).toFixed(1);
+
+        if (Math.abs(delta) < 0.3) {
+            return `About the same temperature`;
+        }
+        let magnitude = (Math.abs(delta) >= 3) ? "Much" : "Slightly";
+
+        if (!useCelcius)
+            delta = (celcToFahr(data.days[1].temp) - celcToFahr(data.days[0].temp)).toFixed(1);
+
+        return `${magnitude} ${delta > 0 ? "warmer" : "colder"} (${delta}°)`;
+    }
+
+    function GetCompareUvByIndex(index) {
+        let data = savedData[index];
+        let delta = (data.days[1].uvindex - data.days[0].uvindex);
+
+        if (Math.abs(delta) < 0.3) {
+            return `Same peak UV (${data.days[1].uvindex})`;
+        }
+        let magnitude = (Math.abs(delta) >= 3) ? "Much" : "Slightly";
+
+        return `${magnitude} ${delta > 0 ? "higher" : "lower"} peak UV (${delta})`;
+    }
+
     // inserts a new place at the front of the list, so the latest one should always be at the top
     function InsertNewPlace(place) {
         //savedPlaces.unshift(place);
@@ -105,6 +132,10 @@ export const UserData = (function () {
 
     function FetchData(index) {
         return savedData[index];
+    }
+
+    function FetchSearchName(index) {
+        return savedPlaces[index];
     }
 
     function ResetIndexCount() {
@@ -161,22 +192,12 @@ export const UserData = (function () {
         if (_savingDisabled)
             return;
         
-        //FrontEnd.ResyncFrontendToData(_currentQuest);
-
-    //let savedPlaces = [];
-    //let savedData = [];
-    //let _panelsCreated = 0;
-
         localStorage.setItem("use12hour", use12hour);
         localStorage.setItem("useCelcius", useCelcius);
         localStorage.setItem("savedPlaces", JSON.stringify(savedPlaces));
-        localStorage.setItem("_panelsCreated", _panelsCreated);
-        //localStorage.setItem("_quests", JSON.stringify(_quests));
-        //localStorage.setItem("_currentQuest", (_currentQuest == null ? -1 : _currentQuest.id)); // store the ID
-        //localStorage.setItem("_questsGenerated", (_questsGenerated));
 
-        DebugPrintouts();
-        console.log(JSON.stringify(savedPlaces));
+        //DebugPrintouts();
+        //console.log(JSON.stringify(savedPlaces));
         console.log("SAVE COMPLETE");
     }
 
@@ -185,7 +206,6 @@ export const UserData = (function () {
             return false;
         
         use12hour = JSON.parse(localStorage.getItem("use12hour"));
-        //console.log(user12hour);
         useCelcius = JSON.parse(localStorage.getItem("useCelcius"));
         savedPlaces = JSON.parse(localStorage.getItem("savedPlaces"));
         console.log("SAVE DATA LOADED");
@@ -194,9 +214,7 @@ export const UserData = (function () {
     }
 
     function DeleteAllData() {
-        //_doNotSave = true;
         localStorage.clear();
-        // refresh the page
         location.reload();
     }
 
@@ -216,8 +234,11 @@ export const UserData = (function () {
         GetCurrentFeelsLikeByIndex,
         GetCurrentTimeByIndex,
         GetIsNightTimeByIndex,
+        GetCompareTemperatureByIndex,
+        GetCompareUvByIndex,
         WriteData,
         FetchData,
+        FetchSearchName,
         DebugPrintouts,
         Initialize,
         SaveData,
