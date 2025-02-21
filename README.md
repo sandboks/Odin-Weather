@@ -2,7 +2,7 @@
 https://sandboks.github.io/Odin-Weather/
 
 # PREVIEW
-![](./preview.png)
+![](./preview.jpg)
 
 # FEATURES
 - Track the weather of your favorite places around the world
