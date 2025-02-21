@@ -9,7 +9,7 @@ https://sandboks.github.io/Odin-Weather/
 - Get detailed information, including how today's weather compares to yesterday
 - Freely switch between time formats and units
 - User settings are automatically saved as you use the app
-- Responsive layout that responsively adjusts to the size of your browser
+- Responsive layout that adjusts to the size of your browser
 
 Tested with Google Chrome and Safari on iOS.
 
