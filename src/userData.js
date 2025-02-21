@@ -8,6 +8,7 @@ export const UserData = (function () {
 
     let savedPlaces = [];
     let savedData = [];
+    let savedYesterdayData = [];
     let _panelsCreated = 0;
 
     let _savingDisabled = false;
@@ -37,6 +38,10 @@ export const UserData = (function () {
         return `feels like ${temp}°`;
     }
 
+    function GetHighLowByIndex(index) {
+        return `H: ${savedData[index].days[0].tempmax} L: ${savedData[index].days[0].tempmin}`;
+    }
+
     function GetCurrentTimeByIndex(index, options = { timeStyle: 'short', hour12: use12hour }) {
         if (savedData[index] == null)
             console.log("ERROR: NULL DATA");
@@ -64,12 +69,10 @@ export const UserData = (function () {
     }
 
     function GetUse12Hour() {
-        console.log(use12hour);
         return use12hour;
     }
 
     function GetUseCelcius() {
-        console.log(useCelcius);
         return useCelcius;
     }
     function GetIsNightTimeByIndex(index) {
@@ -81,9 +84,20 @@ export const UserData = (function () {
         return !(sunrise <= currentTime && currentTime <= sunset);
     }
 
+    function GetYesterdayData(index) {
+        return savedYesterdayData[index];
+    }
+
+    function GiveYesterdayData(index, data) {
+        savedYesterdayData[index] = data;
+    }
+
     function GetCompareTemperatureByIndex(index) {
-        let data = savedData[index];
-        let delta = (data.days[1].temp - data.days[0].temp).toFixed(1);
+        let yesterday = savedYesterdayData[index];
+        if (yesterday == null)
+            return "";
+
+        let delta = (savedData[index].days[0].temp - yesterday.days[0].temp).toFixed(1);
 
         if (Math.abs(delta) < 0.3) {
             return `About the same temperature`;
@@ -91,14 +105,18 @@ export const UserData = (function () {
         let magnitude = (Math.abs(delta) >= 3) ? "Much" : "Slightly";
 
         if (!useCelcius)
-            delta = (celcToFahr(data.days[1].temp) - celcToFahr(data.days[0].temp)).toFixed(1);
+            delta = (celcToFahr(savedData[index].days[0].temp) - celcToFahr(yesterday.days[0].temp)).toFixed(1);
 
         return `${magnitude} ${delta > 0 ? "warmer" : "colder"} (${delta}°)`;
     }
 
     function GetCompareUvByIndex(index) {
+        let yesterday = savedYesterdayData[index];
+        if (yesterday == null)
+            return "";
+        
         let data = savedData[index];
-        let delta = (data.days[1].uvindex - data.days[0].uvindex);
+        let delta = (data.days[0].uvindex - yesterday.days[0].uvindex);
 
         if (Math.abs(delta) < 0.3) {
             return `Same peak UV (${data.days[1].uvindex})`;
@@ -114,7 +132,8 @@ export const UserData = (function () {
         savedPlaces.push(place);
         //savedData.unshift(data);
         savedData.push(null);
-        console.log(savedPlaces);
+        savedYesterdayData.push(null);
+        //console.log(savedPlaces);
     }
 
     function DeleteLocation(index) {
@@ -122,6 +141,7 @@ export const UserData = (function () {
         //array.splice(index, 1);
         savedPlaces.splice(index, 1);
         savedData.splice(index, 1);
+        savedYesterdayData.splice(index, 1);
         DebugPrintouts();
         console.log(index);
     }
@@ -180,7 +200,7 @@ export const UserData = (function () {
         ["tokyo", "sydney", "new york"].forEach(location => {
             InsertNewPlace(location);
         });
-        DebugPrintouts();
+        //DebugPrintouts();
         //ShowInitialPopup();
     }
 
@@ -232,8 +252,11 @@ export const UserData = (function () {
         ToggleTimeFormat,
         GetCurrentTemperatureByIndex,
         GetCurrentFeelsLikeByIndex,
+        GetHighLowByIndex,
         GetCurrentTimeByIndex,
         GetIsNightTimeByIndex,
+        GetYesterdayData,
+        GiveYesterdayData,
         GetCompareTemperatureByIndex,
         GetCompareUvByIndex,
         WriteData,

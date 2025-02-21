@@ -41,6 +41,7 @@ export const DOM_Controller = (function () {
     //let userData = new UserDataClass();
 
     let _searchInProgress = false;
+    let _lockNavigation = false;
     let _currentPanel = null;
     let _deletedPanels = 0;
 
@@ -71,6 +72,8 @@ export const DOM_Controller = (function () {
         });
 
         ReturnToOverviewButton.addEventListener('click', () => {
+            if (_lockNavigation)
+                return;
             SwitchToOverview();
         })
 
@@ -212,7 +215,6 @@ export const DOM_Controller = (function () {
         OverviewRoot.style.display = "none";
         DetailsRoot.style.display = "grid";
 
-        //let data = await WeatherData.GetWeatherDataFromLocation(location);
         _currentPanel = panel;
         InsertDataIntoDetailsPage(panel);
 
@@ -224,13 +226,12 @@ export const DOM_Controller = (function () {
         _currentPanel = null;
     }
 
-    function InsertDataIntoDetailsPage(panel) {
+    async function InsertDataIntoDetailsPage(panel) {
         //console.log(data);
-        console.log(panel.id);
+        //console.log(panel.id);
 
         let data = UserData.FetchData(panel.id);
         let today = data.currentConditions;
-        console.log(data);
 
         const locationSpan = document.querySelector("#detailsSection #locationSpan");
         const dateSpan = document.querySelector("#detailsSection #dateSpan");
@@ -252,16 +253,42 @@ export const DOM_Controller = (function () {
 
         const conditionImg = document.querySelector("#detailsSection #conditionImg");
         ApplyConditionsImage(conditionImg, today.conditions, UserData.GetIsNightTimeByIndex(panel.id));
-
-        const temperatureCompareSpan = document.querySelector("#temperatureCompareSpan");
-        temperatureCompareSpan.textContent = UserData.GetCompareTemperatureByIndex(panel.id);
-        const uvCompareSpan = document.querySelector("#uvCompareSpan");
-        uvCompareSpan.textContent = UserData.GetCompareUvByIndex(panel.id);
+        const HighLowSpan = document.querySelector("#detailsSection #HighLowSpan");
+        HighLowSpan.textContent = UserData.GetHighLowByIndex(panel.id);
 
         document.querySelector("#uvSpan").textContent = today.uvindex;
         document.querySelector("#uvRecommendation").textContent = (today.uvindex >= 3 ? "Sun protection recommended" : "");
         document.querySelector("#humiditySpan").textContent = `${today.humidity.toFixed(0)}%`;
+
+        const temperatureCompareSpan = document.querySelector("#temperatureCompareSpan");
+        temperatureCompareSpan.textContent = "-";
+        const uvCompareSpan = document.querySelector("#uvCompareSpan");
+        uvCompareSpan.textContent = "-";
+
+        // detailed data
+        let yesterday = UserData.GetYesterdayData(panel.id);
+        console.log(yesterday);
+        if (yesterday == null) {
+            console.log("attempt to fetch detailed data");
+            let success = await GetYesterdayData(panel.id, UserData.FetchSearchName(panel.id));
+            if (!success)
+                return;
+        }
+
+        temperatureCompareSpan.textContent = UserData.GetCompareTemperatureByIndex(panel.id);
+        uvCompareSpan.textContent = UserData.GetCompareUvByIndex(panel.id);
+    }
+
+    async function GetYesterdayData(index, searchQuery) {
+        _lockNavigation = true;
+
+        let data = await WeatherData.GetYesterdayWeatherDataFromLocation(searchQuery);
+        if (data == null)
+            return false;
         
+        UserData.GiveYesterdayData(index, data);
+        _lockNavigation = false;
+        return true;
     }
 
     function ApplyConditionsImage(conditionImg, todaysConditions, isNightTime = false) {
@@ -318,6 +345,7 @@ export const DOM_Controller = (function () {
         panel.querySelector("#timeSpan").textContent = UserData.GetCurrentTimeByIndex(panel.id);
         panel.querySelector(".temperatureReading").textContent = UserData.GetCurrentTemperatureByIndex(index);
         panel.querySelector("#feelsLikeSpan").textContent = UserData.GetCurrentFeelsLikeByIndex(panel.id);
+        panel.querySelector("#HighLowSpan").textContent = UserData.GetHighLowByIndex(panel.id);
         panel.querySelector(".TemperatureUnitsSymbol").textContent = UserData.GetTemperatureSymbol();
 
         //console.log(data.resolvedAddress);
@@ -331,7 +359,7 @@ export const DOM_Controller = (function () {
     function CreateBlankWeatherOverviewPanel(index) {
 
         let panel = DOM_Helper.InsertDivAtTop(OverviewPanelsRoot, ["WeatherOverviewPanel"]);
-        panel.id = index; // this needs to come from the backend, but
+        panel.id = index; 
 
             let locationSpan = DOM_Helper.AppendSpan(panel, "-");
             locationSpan.id = "locationSpan";
@@ -344,6 +372,10 @@ export const DOM_Controller = (function () {
                     let img = DOM_Helper.AppendTag(CenteredImage, "img");
                     img.src = imgUnknown;
                     img.id = "conditionImg";
+
+
+                    let HighLowSpan = DOM_Helper.AppendSpan(CenteredImage, "-");
+                    HighLowSpan.id = "HighLowSpan";
 
                 let rightDiv = DOM_Helper.AppendDivWithClasses(sideGrid, ["CenteredImage"]);
                     let WeatherPanelMainTemperature = DOM_Helper.AppendDivWithClasses(rightDiv, ["WeatherPanelMainTemperature"]);
